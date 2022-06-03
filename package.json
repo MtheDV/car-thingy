@@ -1,0 +1,22 @@
+{
+  "name": "car-thingy",
+  "version": "1.0.0",
+  "description": "bluetooth media player",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MtheDV/car-thingy.git"
+  },
+  "author": "Mathew de Vin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MtheDV/car-thingy/issues"
+  },
+  "homepage": "https://github.com/MtheDV/car-thingy#readme",
+  "dependencies": {
+    "node-ble": "^1.7.0"
+  }
+}
