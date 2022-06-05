@@ -1,22 +1,21 @@
 {
   "name": "car-thingy",
   "version": "1.0.0",
-  "description": "bluetooth media player",
-  "main": "src/main.js",
+  "description": "Electron based media player application.",
+  "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MtheDV/car-thingy.git"
+    "start": "electron .",
+    "dist": "electron-builder --linux snap"
   },
   "author": "Mathew de Vin",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/MtheDV/car-thingy/issues"
+  "devDependencies": {
+    "electron": "^19.0.2",
+    "electron-builder": "^23.0.3",
+    "electron-rebuild": "^3.2.7"
   },
-  "homepage": "https://github.com/MtheDV/car-thingy#readme",
   "dependencies": {
-    "node-ble": "^1.7.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "robotjs": "^0.6.0"
   }
 }
