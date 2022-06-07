@@ -30,10 +30,10 @@ const initializePlayer = async () => {
     let transportPath = null;
     
     Object.entries(managedObjects).forEach(([path, managedObject]) => {
-      if (managedObject.contains('org.bluez.MediaPlayer1')) {
+      if ('org.bluez.MediaPlayer1' in managedObject) {
         playerPath = path;
       }
-      if (managedObject.contains('org.bluez.MediaTransport1')) {
+      if ('org.bluez.MediaTransport1' in managedObject) {
         transportPath = path;
       }
     });
