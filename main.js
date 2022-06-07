@@ -55,6 +55,8 @@ app.whenReady().then(() => {
   initializePlayer().then(() => {
     if (player) console.log('Bluetooth player interface initialized!');
     else console.log('No bluetooth player found!');
+  
+    console.log(player.Track);
   });
   
   app.on('activate', () => {
