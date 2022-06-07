@@ -53,6 +53,10 @@ const playerProperties = () => {
   return player.getInterface('org.freedesktop.DBus.Properties');
 }
 
+const getTrack = () => {
+  playerProperties().GetAll('org.bluez.MediaPlayer1', 'Track');
+}
+
 app.whenReady().then(() => {
   createWindow();
   
