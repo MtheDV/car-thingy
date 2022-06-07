@@ -33,11 +33,11 @@ class BluezPlayer {
      * Listen for adapter changes, the run actions.
      * Actions Available: https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/adapter-api.txt
      */
-    this.#adapterProperties.on('PropertiesChanged', (iface, changed) => {
-      for (let prop of Object.keys(changed)) {
-        console.log(`Property changed: ${prop}`);
-      }
-    });
+    // this.#adapterProperties.on('PropertiesChanged', (iface, changed) => {
+    //   for (let prop of Object.keys(changed)) {
+    //     console.log(`Property changed: ${prop}`);
+    //   }
+    // });
   }
   
   static async initialize(propertyChangeActions) {
