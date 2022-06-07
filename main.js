@@ -23,7 +23,9 @@ const initializePlayer = async () => {
   
   const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
   
-  console.log(manager.GetManagedObjects());
+  manager.GetManagedObjects().then((objects) => {
+    console.log(objects);
+  });
   
   console.log(bluezObj.interfaces);
   console.log(bluezObj.nodes);
