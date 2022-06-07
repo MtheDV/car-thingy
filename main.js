@@ -6,9 +6,10 @@ const bus = dbus.systemBus();
 const Variant = dbus.Variant;
 
 let bluezPlayer = null;
+let window = null
 
 const createWindow = () => {
-  const win = new BrowserWindow({
+  window = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -16,30 +17,27 @@ const createWindow = () => {
     }
   });
   
-  win.loadFile('index.html');
+  window.loadFile('index.html');
 }
 
 const updateTrack = () => {
   if (!bluezPlayer) return;
   bluezPlayer.getTrack().then(track => {
-    // TODO: Notify renderer.js with details through ipcMain
-    console.log(track);
+    window.webContents.send('set-track-update', track);
   }).catch();
 }
 
 const updateStatus = () => {
   if (!bluezPlayer) return;
   bluezPlayer.getStatus().then(status => {
-    // TODO: Notify renderer.js with details through ipcMain
-    console.log(status);
+    window.webContents.send('set-status-update', status);
   }).catch();
 }
 
 const updatePosition = () => {
   if (!bluezPlayer) return;
   bluezPlayer.getPosition().then(position => {
-    // TODO: Notify renderer.js with details through ipcMain
-    console.log(position);
+    window.webContents.send('set-position-update', position);
   }).catch();
 }
 

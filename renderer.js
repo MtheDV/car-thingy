@@ -17,3 +17,8 @@ const audioPrevious = () => {
 document.getElementById('audio-play-pause').addEventListener('click', toggleAudioPlayPause);
 document.getElementById('audio-next').addEventListener('click', audioNext);
 document.getElementById('audio-previous').addEventListener('click', audioPrevious);
+
+window.api.onTrackUpdate((_, value) => {
+  document.getElementById('track-title').innerText = value.Title;
+  document.getElementById('track-artist').innerText = value.Artist;
+});
