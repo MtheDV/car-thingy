@@ -55,8 +55,8 @@ const playerProperties = () => {
 
 const getTrack = async () => {
   const trackVariant = await playerProperties().Get('org.bluez.MediaPlayer1', 'Track');
-  return Object.entries(trackVariant.value).reduce((prev, [type, value]) => {
-    prev[type] = value;
+  return Object.entries(trackVariant.value).reduce((prev, [type, variant]) => {
+    prev[type] = variant.value;
     return prev;
   }, {});
 }

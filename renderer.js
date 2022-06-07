@@ -1,5 +1,9 @@
+let audioPlaying = true;
+
 const toggleAudioPlayPause = () => {
-  window.api.setAudioPlay();
+  if (audioPlaying) window.api.setAudioPause();
+  else window.api.setAudioPlay();
+  audioPlaying = !audioPlaying;
 }
 
 const audioNext = () => {
