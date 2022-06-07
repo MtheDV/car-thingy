@@ -5,6 +5,7 @@ const bus = dbus.systemBus();
 const Variant = dbus.Variant;
 
 let player = null;
+let transport = null;
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -23,12 +24,10 @@ const initializePlayer = async () => {
   
   const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
   
+  let playerPath = null;
+  let transportPath = null;
+  
   manager.GetManagedObjects().then(managedObjects => {
-    console.log(managedObjects);
-    
-    let playerPath = null;
-    let transportPath = null;
-    
     Object.entries(managedObjects).forEach(([path, managedObject]) => {
       if ('org.bluez.MediaPlayer1' in managedObject) {
         playerPath = path;
@@ -41,6 +40,13 @@ const initializePlayer = async () => {
     console.log(playerPath);
     console.log(transportPath);
   });
+  
+  if (playerPath) {
+    player = await bus.getProxyObject('org.bluez', playerPath);
+  }
+  if (transportPath) {
+    transport = await bus.getProxyObject('org.bluez', transportPath);
+  }
 }
 
 app.whenReady().then(() => {
