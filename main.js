@@ -39,6 +39,7 @@ const initializePlayer = async () => {
   
   if (playerPath) {
     player = await bus.getProxyObject('org.bluez', playerPath);
+    console.log(player);
   }
   if (transportPath) {
     transport = await bus.getProxyObject('org.bluez', transportPath);
