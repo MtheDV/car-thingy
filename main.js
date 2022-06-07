@@ -39,11 +39,14 @@ const initializePlayer = async () => {
   
   if (playerPath) {
     player = await bus.getProxyObject('org.bluez', playerPath);
-    console.log(player);
   }
   if (transportPath) {
     transport = await bus.getProxyObject('org.bluez', transportPath);
   }
+}
+
+const playerInterface = () => {
+  return player.getInterface('org.bluez.MediaPlayer1');
 }
 
 app.whenReady().then(() => {
@@ -68,20 +71,20 @@ app.on('window-all-closed', () => {
  */
 ipcMain.on('set-audio-pause', () => {
   if (!player) return;
-  player.Pause();
+  playerInterface().Pause();
 });
 
 ipcMain.on('set-audio-play', () => {
   if (!player) return;
-  player.Play();
+  playerInterface().Play();
 });
 
 ipcMain.on('set-audio-next', () => {
   if (!player) return;
-  player.Next();
+  playerInterface().Next();
 });
 
 ipcMain.on('set-audio-previous', () => {
   if (!player) return;
-  player.Previous();
+  playerInterface().Previous();
 });
