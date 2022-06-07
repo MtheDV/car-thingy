@@ -23,14 +23,24 @@ const initializePlayer = async () => {
   
   const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
   
-  manager.GetManagedObjects().then((objects) => {
-    console.log(objects);
+  manager.GetManagedObjects().then(managedObjects => {
+    console.log(managedObjects);
+    
+    let playerPath = null;
+    let transportPath = null;
+    
+    Object.entries(managedObjects).forEach(([path, managedObject]) => {
+      if (managedObject.contains('org.bluez.MediaPlayer1')) {
+        playerPath = path;
+      }
+      if (managedObject.contains('org.bluez.MediaTransport1')) {
+        transportPath = path;
+      }
+    });
+  
+    console.log(playerPath);
+    console.log(transportPath);
   });
-  
-  console.log(bluezObj.interfaces);
-  console.log(bluezObj.nodes);
-  
-  // player = bluezObj.getInterface('');
 }
 
 app.whenReady().then(() => {
