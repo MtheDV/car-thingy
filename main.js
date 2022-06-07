@@ -50,7 +50,7 @@ const playerInterface = () => {
 }
 
 const playerProperties = () => {
-  return player.GetAll('org.bluez.MediaPlayer1', 'org.freedesktop.DBus.Properties');
+  return player.getInterface('org.freedesktop.DBus.Properties');
 }
 
 app.whenReady().then(() => {
