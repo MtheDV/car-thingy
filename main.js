@@ -61,16 +61,24 @@ const getTrack = async () => {
   }, {});
 }
 
+const listenForPlayerPropertyChanges = () => {
+  playerProperties().on('PropertiesChanged', (iface, changed, invalidated) => {
+    for (let prop of Object.keys(changed)) {
+      console.log(`property changed: ${prop}`);
+    }
+  });
+}
+
 app.whenReady().then(() => {
   createWindow();
   
   initializePlayer().then(() => {
-    if (player) console.log('Bluetooth player interface initialized!');
-    else console.log('No bluetooth player found!');
-    
-    getTrack().then(track => {
-      console.log(track);
-    }).catch();
+    if (!player) {
+      console.info('No Bluetooth Player Found!');
+      return;
+    }
+    console.info('Bluetooth Player Interface Initialized!');
+    listenForPlayerPropertyChanges();
   });
   
   app.on('activate', () => {
