@@ -6,7 +6,7 @@ class BluezPlayer {
   constructor(player, device, propertyChangeActions) {
     this.player = player;
     this.device = device;
-    this.alias = device.getInterface('org.bluez.Device1');
+    this.alias = device.getInterface('org.bluez.Device1').getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias');
     console.log(this.alias);
     
     /**
