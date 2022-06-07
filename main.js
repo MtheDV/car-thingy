@@ -54,7 +54,7 @@ const playerProperties = () => {
 }
 
 const getTrack = async () => {
-  return await playerProperties().GetAll('org.bluez.MediaPlayer1', 'Track');
+  return await playerProperties().Get('org.bluez.MediaPlayer1', 'Track');
 }
 
 app.whenReady().then(() => {
