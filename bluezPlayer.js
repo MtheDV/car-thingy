@@ -7,10 +7,11 @@ class BluezPlayer {
   alias;
   adapter;
   
-  constructor(player, device, alias, propertyChangeActions) {
+  constructor(player, device, alias, adapter, propertyChangeActions) {
     this.player = player;
     this.device = device;
     this.alias = alias;
+    this.adapter = adapter;
     
     // Call each property action to update display
     Object.values(propertyChangeActions).forEach((action) => action());
@@ -50,6 +51,7 @@ class BluezPlayer {
     let playerPath = null;
     let player = null;
     let adapterPath = null;
+    let adapter = null;
     Object.entries(managedObjects).forEach(([path, managedObject]) => {
       if ('org.bluez.MediaPlayer1' in managedObject) {
         playerPath = path;
@@ -73,9 +75,11 @@ class BluezPlayer {
       
     }
   
-    console.log(adapterPath);
+    adapter = await bus.getProxyObject('org.bluez', adapterPath);
     
-    return new BluezPlayer(player, device, alias, propertyChangeActions);
+    console.log(adapter);
+    
+    return new BluezPlayer(player, device, alias, adapter, propertyChangeActions);
   }
   
   get #interface() {
