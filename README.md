@@ -7,3 +7,5 @@ An Electron JS media player app inspired by the Spotify Car Thing. Built to run 
  - [Snap Electron Apps](https://snapcraft.io/docs/electron-apps)
  - [Ubuntu-Frame Raspbian](https://snapcraft.io/install/ubuntu-frame/raspbian)
  - [Electron JS Quick Start](https://www.electronjs.org/docs/latest/tutorial/quick-start)
+ - [Node D-Bus Library](https://acrisci.github.io/doc/node-dbus-next/index.html)
+ - [Bluez D-Bus Media Api](https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/media-api.txt)
