@@ -1,11 +1,11 @@
 const {app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
 const dbus = require('dbus-next');
+const BluezPlayer = require('./bluezPlayer');
 const bus = dbus.systemBus();
 const Variant = dbus.Variant;
 
-let player = null;
-let transport = null;
+let bluezPlayer = null;
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -19,104 +19,43 @@ const createWindow = () => {
   win.loadFile('index.html');
 }
 
-const initializePlayer = async () => {
-  const bluezObj = await bus.getProxyObject('org.bluez', '/');
-  
-  const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
-  
-  let playerPath = null;
-  let transportPath = null;
-  
-  const managedObjects = await manager.GetManagedObjects();
-  Object.entries(managedObjects).forEach(([path, managedObject]) => {
-    if ('org.bluez.MediaPlayer1' in managedObject) {
-      playerPath = path;
-    }
-    if ('org.bluez.MediaTransport1' in managedObject) {
-      transportPath = path;
-    }
-  });
-  
-  if (playerPath) {
-    player = await bus.getProxyObject('org.bluez', playerPath);
-  }
-  if (transportPath) {
-    transport = await bus.getProxyObject('org.bluez', transportPath);
-  }
-}
-
-const playerInterface = () => {
-  return player.getInterface('org.bluez.MediaPlayer1');
-}
-
-const playerProperties = () => {
-  return player.getInterface('org.freedesktop.DBus.Properties');
-}
-
-const getTrack = async () => {
-  const trackVariant = await playerProperties().Get('org.bluez.MediaPlayer1', 'Track');
-  return Object.entries(trackVariant.value).reduce((prev, [type, variant]) => {
-    prev[type] = variant.value;
-    return prev;
-  }, {});
-}
-
 const updateTrack = () => {
-  getTrack().then(track => {
+  if (!bluezPlayer) return;
+  bluezPlayer.track.then(track => {
     // TODO: Notify renderer.js with details through ipcMain
     console.log(track);
   }).catch();
 }
 
-const getStatus = async () => {
-  const statusVariant = await playerProperties().Get('org.bluez.MediaPlayer1', 'Status');
-  return statusVariant.value;
-}
-
 const updateStatus = () => {
-  getStatus().then(status => {
+  if (!bluezPlayer) return;
+  bluezPlayer.status.then(status => {
     // TODO: Notify renderer.js with details through ipcMain
     console.log(status);
   }).catch();
 }
 
-const getPosition = async () => {
-  const positionVariant = await playerProperties().Get('org.bluez.MediaPlayer1', 'Position');
-  return positionVariant.value;
-}
-
 const updatePosition = () => {
-  getPosition().then(position => {
+  if (!bluezPlayer) return;
+  bluezPlayer.position.then(position => {
     // TODO: Notify renderer.js with details through ipcMain
     console.log(position);
   }).catch();
 }
 
-const playerPropertyChangeActions = {
-  'Track': updateTrack,
-  'Status': updateStatus,
-  'Position': updatePosition
-}
-
-const listenForPlayerPropertyChanges = () => {
-  playerProperties().on('PropertiesChanged', (iface, changed, invalidated) => {
-    for (let prop of Object.keys(changed)) {
-      console.log(`Property changed: ${prop}`);
-      playerPropertyChangeActions[prop]();
-    }
-  });
-}
-
 app.whenReady().then(() => {
   createWindow();
   
-  initializePlayer().then(() => {
-    if (!player) {
-      console.info('No Bluetooth Player Found!');
-      return;
-    }
+  BluezPlayer.initialize(bus, {
+    'Track': updateTrack,
+    'Status': updateStatus,
+    'Position': updatePosition
+  }).then(bluezPlayerObject => {
+    bluezPlayer = bluezPlayerObject;
     console.info('Bluetooth Player Interface Initialized!');
-    listenForPlayerPropertyChanges();
+    console.info('Alias:', bluezPlayer.alias);
+  }).catch(err => {
+    console.error('Unable to Initialize Bluetooth Interface!', err);
   });
   
   app.on('activate', () => {
@@ -132,21 +71,21 @@ app.on('window-all-closed', () => {
  * ipcMain functions to handle media player controls through dbus
  */
 ipcMain.on('set-audio-pause', () => {
-  if (!player) return;
-  playerInterface().Pause();
+  if (!bluezPlayer) return;
+  bluezPlayer.pause();
 });
 
 ipcMain.on('set-audio-play', () => {
-  if (!player) return;
-  playerInterface().Play();
+  if (!bluezPlayer) return;
+  bluezPlayer.play();
 });
 
 ipcMain.on('set-audio-next', () => {
-  if (!player) return;
-  playerInterface().Next();
+  if (!bluezPlayer) return;
+  bluezPlayer.next();
 });
 
 ipcMain.on('set-audio-previous', () => {
-  if (!player) return;
-  playerInterface().Previous();
+  if (!bluezPlayer) return;
+  bluezPlayer.previous();
 });
