@@ -21,7 +21,12 @@ const createWindow = () => {
 const initializePlayer = async () => {
   const bluezObj = await bus.getProxyObject('org.bluez', '/');
   
+  const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
+  
+  console.log(manager.GetManagedObjects());
+  
   console.log(bluezObj.interfaces);
+  console.log(bluezObj.nodes);
   
   // player = bluezObj.getInterface('');
 }
