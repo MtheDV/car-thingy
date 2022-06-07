@@ -6,7 +6,8 @@ class BluezPlayer {
   constructor(player, device, propertyChangeActions) {
     this.player = player;
     this.device = device;
-    this.alias = device.Get('org.bluez.Device1', 'Alias');
+    this.alias = device.getInterface('org.bluez.Device1');
+    console.log(this.alias);
     
     /**
      * Listen for property changes, then run provided actions.
@@ -41,9 +42,7 @@ class BluezPlayer {
     if (playerPath) {
       player = await bus.getProxyObject('org.bluez', playerPath);
       devicePath = await player.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.MediaPlayer1', 'Device');
-      console.log(devicePath);
       device = await bus.getProxyObject('org.bluez', devicePath.value);
-      console.log(device);
     } else {
       // TODO: Wait for device and/or search for new device
     }
