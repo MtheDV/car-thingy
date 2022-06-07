@@ -49,6 +49,10 @@ const playerInterface = () => {
   return player.getInterface('org.bluez.MediaPlayer1');
 }
 
+const playerProperties = () => {
+  return player.GetAll('org.bluez.MediaPlayer1', 'org.freedesktop.DBus.Properties');
+}
+
 app.whenReady().then(() => {
   createWindow();
   
@@ -56,7 +60,7 @@ app.whenReady().then(() => {
     if (player) console.log('Bluetooth player interface initialized!');
     else console.log('No bluetooth player found!');
   
-    console.log(playerInterface().Track);
+    console.log(playerProperties());
   });
   
   app.on('activate', () => {
