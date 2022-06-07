@@ -1,5 +1,10 @@
 const {app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
+const dbus = require('dbus-next');
+const bus = dbus.systemBus();
+const Variant = dbus.Variant;
+
+let player = null;
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -13,8 +18,20 @@ const createWindow = () => {
   win.loadFile('index.html');
 }
 
+const initializePlayer = async () => {
+  const bluezObj = await bus.getProxyObject('org.bluez', '/');
+  
+  console.log(bluezObj.interfaces);
+  
+  // player = bluezObj.getInterface('');
+}
+
 app.whenReady().then(() => {
   createWindow();
+  
+  initializePlayer().then(() => {
+    console.log('bluetooth interface initialized');
+  });
   
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

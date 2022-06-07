@@ -15,6 +15,7 @@
     "electron-rebuild": "^3.2.7"
   },
   "dependencies": {
+    "dbus-next": "^0.10.2",
     "electron-squirrel-startup": "^1.0.0"
   }
 }
