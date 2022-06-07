@@ -61,10 +61,48 @@ const getTrack = async () => {
   }, {});
 }
 
+const updateTrack = () => {
+  getTrack().then(track => {
+    // TODO: Notify renderer.js with details through ipcMain
+    console.log(track);
+  }).catch();
+}
+
+const getStatus = async () => {
+  const statusVariant = await playerProperties().Get('org.bluez.MediaPlayer1', 'Status');
+  return statusVariant.value;
+}
+
+const updateStatus = () => {
+  getStatus().then(status => {
+    // TODO: Notify renderer.js with details through ipcMain
+    console.log(status);
+  }).catch();
+}
+
+const getPosition = async () => {
+  const positionVariant = await playerProperties().Get('org.bluez.MediaPlayer1', 'Position');
+  return positionVariant.value;
+}
+
+const updatePosition = () => {
+  getPosition().then(position => {
+    // TODO: Notify renderer.js with details through ipcMain
+    console.log(position);
+  }).catch();
+}
+
+const playerPropertyChangeActions = {
+  'Track': updateTrack,
+  'Status': updateStatus,
+  'Position': updatePosition
+}
+
 const listenForPlayerPropertyChanges = () => {
   playerProperties().on('PropertiesChanged', (iface, changed, invalidated) => {
     for (let prop of Object.keys(changed)) {
-      console.log(`property changed: ${prop}`);
+      console.log(`Property changed: ${prop}`);
+      playerPropertyChangeActions[prop]();
     }
   });
 }
