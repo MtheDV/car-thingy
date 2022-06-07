@@ -13,7 +13,7 @@ class BluezPlayer {
     this.alias = alias;
     
     // Call each property action to update display
-    Object.keys(propertyChangeActions).forEach((action) => action());
+    Object.values(propertyChangeActions).forEach((action) => action());
     
     // Play now that it's connected
     this.play();
