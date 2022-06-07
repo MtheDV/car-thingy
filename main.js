@@ -12,7 +12,7 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js")
+      preload: path.join(__dirname, 'preload.js')
     }
   });
   
@@ -27,18 +27,14 @@ const initializePlayer = async () => {
   let playerPath = null;
   let transportPath = null;
   
-  manager.GetManagedObjects().then(managedObjects => {
-    Object.entries(managedObjects).forEach(([path, managedObject]) => {
-      if ('org.bluez.MediaPlayer1' in managedObject) {
-        playerPath = path;
-      }
-      if ('org.bluez.MediaTransport1' in managedObject) {
-        transportPath = path;
-      }
-    });
-  
-    console.log(playerPath);
-    console.log(transportPath);
+  const managedObjects = await manager.GetManagedObjects();
+  Object.entries(managedObjects).forEach(([path, managedObject]) => {
+    if ('org.bluez.MediaPlayer1' in managedObject) {
+      playerPath = path;
+    }
+    if ('org.bluez.MediaTransport1' in managedObject) {
+      transportPath = path;
+    }
   });
   
   if (playerPath) {
@@ -53,7 +49,8 @@ app.whenReady().then(() => {
   createWindow();
   
   initializePlayer().then(() => {
-    console.log('bluetooth interface initialized');
+    if (player) console.log('Bluetooth player interface initialized!');
+    else console.log('No bluetooth player found!');
   });
   
   app.on('activate', () => {
@@ -65,19 +62,25 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
 
-// ROBOT.JS Key-presses
+/**
+ * ipcMain functions to handle media player controls through dbus
+ */
 ipcMain.on('set-audio-pause', () => {
-  // robot.keyTap('audio_pause');
+  if (!player) return;
+  player.Pause();
 });
 
 ipcMain.on('set-audio-play', () => {
-  // robot.keyTap('audio_play');
+  if (!player) return;
+  player.Play();
 });
 
 ipcMain.on('set-audio-next', () => {
-  // robot.keyTap('audio_next');
+  if (!player) return;
+  player.Next();
 });
 
 ipcMain.on('set-audio-previous', () => {
-  // robot.keyTap('audio_prev');
+  if (!player) return;
+  player.Previous();
 });
