@@ -21,7 +21,7 @@ const createWindow = () => {
 
 const updateTrack = () => {
   if (!bluezPlayer) return;
-  bluezPlayer.track.then(track => {
+  bluezPlayer.getTrack().then(track => {
     // TODO: Notify renderer.js with details through ipcMain
     console.log(track);
   }).catch();
@@ -29,7 +29,7 @@ const updateTrack = () => {
 
 const updateStatus = () => {
   if (!bluezPlayer) return;
-  bluezPlayer.status.then(status => {
+  bluezPlayer.getStatus().then(status => {
     // TODO: Notify renderer.js with details through ipcMain
     console.log(status);
   }).catch();
@@ -37,7 +37,7 @@ const updateStatus = () => {
 
 const updatePosition = () => {
   if (!bluezPlayer) return;
-  bluezPlayer.position.then(position => {
+  bluezPlayer.getPosition().then(position => {
     // TODO: Notify renderer.js with details through ipcMain
     console.log(position);
   }).catch();

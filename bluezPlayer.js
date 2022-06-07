@@ -57,7 +57,7 @@ class BluezPlayer {
     return this.player.getInterface('org.freedesktop.DBus.Properties');
   }
   
-  async get track() {
+  async getTrack() {
     const trackVariant = await this.#properties.Get('org.bluez.MediaPlayer1', 'Track');
     return Object.entries(trackVariant.value).reduce((prev, [type, variant]) => {
       prev[type] = variant.value;
@@ -65,12 +65,12 @@ class BluezPlayer {
     }, {});
   }
   
-  async get status() {
+  async getStatus() {
     const statusVariant = await this.#properties.Get('org.bluez.MediaPlayer1', 'Status');
     return statusVariant.value;
   }
   
-  async get position() {
+  async getPosition() {
     const positionVariant = await this.#properties.Get('org.bluez.MediaPlayer1', 'Position');
     return positionVariant.value;
   }
@@ -96,4 +96,4 @@ class BluezPlayer {
   }
 }
 
-export default BluezPlayer;
+module.exports = BluezPlayer;
