@@ -4,6 +4,10 @@ const buttonPlayPause = document.getElementById('audio-play-pause');
 const buttonNext = document.getElementById('audio-next');
 const buttonPrevious = document.getElementById('audio-previous');
 
+const updatePlayPauseButton = () => {
+  buttonPlayPause.innerText = audioPlaying ? 'Pause' : 'Play';
+}
+
 /**
  * Call API to pause/play audio when the button is pressed
  */
@@ -11,6 +15,7 @@ const toggleAudioPlayPause = () => {
   if (audioPlaying) window.api.setAudioPause();
   else window.api.setAudioPlay();
   audioPlaying = !audioPlaying;
+  updatePlayPauseButton();
 }
 buttonPlayPause.addEventListener('click', toggleAudioPlayPause);
 
@@ -44,4 +49,5 @@ window.api.onTrackUpdate((_, value) => {
 window.api.onStatusUpdate((_, value) => {
   // Statuses: "playing", "stopped", "paused", "forward-seek", "reverse-seek" or "error"
   audioPlaying = value === 'playing';
+  updatePlayPauseButton();
 });
