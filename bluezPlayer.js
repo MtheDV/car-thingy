@@ -41,7 +41,9 @@ class BluezPlayer {
     if (playerPath) {
       player = await bus.getProxyObject('org.bluez', playerPath);
       devicePath = player.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.MediaPlayer1', 'Device');
+      console.log(devicePath);
       device = await bus.getProxyObject('org.bluez', devicePath);
+      console.log(device);
     } else {
       // TODO: Wait for device and/or search for new device
     }
