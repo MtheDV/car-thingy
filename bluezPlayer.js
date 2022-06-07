@@ -3,11 +3,10 @@ class BluezPlayer {
   device;
   alias;
   
-  constructor(player, device, propertyChangeActions) {
+  constructor(player, device, alias, propertyChangeActions) {
     this.player = player;
     this.device = device;
-    this.alias = device.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias');
-    console.log(this.alias);
+    this.alias = alias;
     
     /**
      * Listen for property changes, then run provided actions.
@@ -39,15 +38,17 @@ class BluezPlayer {
     // Get media device if found, otherwise search or wait for connected device
     let devicePath = null;
     let device = null;
+    let alias = 'Unknown Bluetooth Device';
     if (playerPath) {
       player = await bus.getProxyObject('org.bluez', playerPath);
       devicePath = await player.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.MediaPlayer1', 'Device');
       device = await bus.getProxyObject('org.bluez', devicePath.value);
+      alias = (await device.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias')).value;
     } else {
       // TODO: Wait for device and/or search for new device
     }
     
-    return new BluezPlayer(player, device, propertyChangeActions);
+    return new BluezPlayer(player, device, alias, propertyChangeActions);
   }
   
   get #interface() {
