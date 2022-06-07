@@ -1,6 +1,5 @@
 const {app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
-const robot = require('robotjs');
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -28,17 +27,17 @@ app.on('window-all-closed', () => {
 
 // ROBOT.JS Key-presses
 ipcMain.on('set-audio-pause', () => {
-  robot.keyTap('audio_pause');
+  // robot.keyTap('audio_pause');
 });
 
 ipcMain.on('set-audio-play', () => {
-  robot.keyTap('audio_play');
+  // robot.keyTap('audio_play');
 });
 
 ipcMain.on('set-audio-next', () => {
-  robot.keyTap('audio_next');
+  // robot.keyTap('audio_next');
 });
 
 ipcMain.on('set-audio-previous', () => {
-  robot.keyTap('audio_prev');
+  // robot.keyTap('audio_prev');
 });

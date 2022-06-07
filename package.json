@@ -15,7 +15,6 @@
     "electron-rebuild": "^3.2.7"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0",
-    "robotjs": "^0.6.0"
+    "electron-squirrel-startup": "^1.0.0"
   }
 }
