@@ -53,8 +53,8 @@ const playerProperties = () => {
   return player.getInterface('org.freedesktop.DBus.Properties');
 }
 
-const getTrack = () => {
-  return playerProperties().GetAll('org.bluez.MediaPlayer1', 'Track');
+const getTrack = async () => {
+  return await playerProperties().GetAll('org.bluez.MediaPlayer1', 'Track');
 }
 
 app.whenReady().then(() => {
@@ -64,7 +64,11 @@ app.whenReady().then(() => {
     if (player) console.log('Bluetooth player interface initialized!');
     else console.log('No bluetooth player found!');
   
-    console.log(getTrack());
+    getTrack().then((details) => {
+      console.log(details);
+    }).catch((err) => {
+      console.error(err);
+    });
   });
   
   app.on('activate', () => {
