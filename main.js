@@ -1,9 +1,6 @@
 const {app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
-const dbus = require('dbus-next');
 const BluezPlayer = require('./bluezPlayer');
-const bus = dbus.systemBus();
-const Variant = dbus.Variant;
 
 let bluezPlayer = null;
 let window = null
@@ -41,10 +38,14 @@ const updatePosition = () => {
   }).catch();
 }
 
+const updateDevice = () => {
+  window.webContents.send('set-device-update', 'Device 1');
+}
+
 app.whenReady().then(() => {
   createWindow();
   
-  BluezPlayer.initialize(bus, {
+  BluezPlayer.initialize({
     'Track': updateTrack,
     'Status': updateStatus,
     'Position': updatePosition

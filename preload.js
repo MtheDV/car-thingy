@@ -21,5 +21,8 @@ contextBridge.exposeInMainWorld('api', {
   },
   onPositionUpdate: (callback) => {
     ipcRenderer.on('set-position-update', callback);
+  },
+  onDeviceUpdate: (callback) => {
+    ipcRenderer.on('set-device-update', callback);
   }
 });

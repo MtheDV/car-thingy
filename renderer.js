@@ -51,3 +51,10 @@ window.api.onStatusUpdate((_, value) => {
   audioPlaying = value === 'playing';
   updatePlayPauseButton();
 });
+
+/**
+ * When the connected device changes, update the displayed value
+ */
+window.api.onDeviceUpdate((_, value) => {
+  document.getElementById('device-alias').innerText = `Connected to ${value}`;
+});

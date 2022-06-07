@@ -1,26 +1,46 @@
+const dbus = require('dbus-next');
+const bus = dbus.systemBus();
+
 class BluezPlayer {
   player;
   device;
   alias;
+  adapter;
   
   constructor(player, device, alias, propertyChangeActions) {
     this.player = player;
     this.device = device;
     this.alias = alias;
     
+    // Call each property action to update display
+    propertyChangeActions.forEach((action) => action());
+    
+    // Play now that it's connected
+    this.play();
+    
     /**
      * Listen for property changes, then run provided actions.
      * Actions Available: https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/media-api.txt
      */
-    this.#properties.on('PropertiesChanged', (iface, changed, invalidated) => {
+    this.#properties.on('PropertiesChanged', (iface, changed) => {
       for (let prop of Object.keys(changed)) {
         console.log(`Property changed: ${prop}`);
         propertyChangeActions[prop]();
       }
     });
+  
+    /**
+     * Listen for adapter changes, the run actions.
+     * Actions Available: https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/adapter-api.txt
+     */
+    this.#adapterProperties.on('PropertiesChanged', (iface, changed) => {
+      for (let prop of Object.keys(changed)) {
+        console.log(`Property changed: ${prop}`);
+      }
+    });
   }
   
-  static async initialize(bus, propertyChangeActions) {
+  static async initialize(propertyChangeActions) {
     // Connect to the bluez dbus, then get the objects it manages
     const bluezObj = await bus.getProxyObject('org.bluez', '/');
     const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
@@ -29,9 +49,13 @@ class BluezPlayer {
     // Check if there is already a media player device within the managed objects
     let playerPath = null;
     let player = null;
+    let adapterPath = null;
     Object.entries(managedObjects).forEach(([path, managedObject]) => {
       if ('org.bluez.MediaPlayer1' in managedObject) {
         playerPath = path;
+      }
+      if ('org.bluez.Adapter1' in managedObject) {
+        adapterPath = path;
       }
     });
     
@@ -46,7 +70,10 @@ class BluezPlayer {
       alias = (await device.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias')).value;
     } else {
       // TODO: Wait for device and/or search for new device
+      
     }
+  
+    console.log(adapterPath);
     
     return new BluezPlayer(player, device, alias, propertyChangeActions);
   }
@@ -57,6 +84,10 @@ class BluezPlayer {
   
   get #properties() {
     return this.player.getInterface('org.freedesktop.DBus.Properties');
+  }
+  
+  get #adapterProperties() {
+    return this.adapter.getInterface('org.freedesktop.DBus.Properties');
   }
   
   async getTrack() {
