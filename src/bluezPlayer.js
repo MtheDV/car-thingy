@@ -2,29 +2,29 @@ const dbus = require('dbus-next');
 const bus = dbus.systemBus();
 const Variant = dbus.Variant;
 
-// bus.addMethodHandler((msg) => {
-//   console.log(msg);
-//   if (
-//     msg.path === '/org/bluez' &&
-//     msg.interface === 'org.bluez.Agent1' &&
-//     msg.member === 'RequestConfirmation'
-//   ) {
-//     console.info('RequestConfirmation returns');
-//     return true;
-//   }
-// });
-//
-// bus.addMethodHandler((msg) => {
-//   console.log(msg);
-//   if (
-//     msg.path === '/org/bluez' &&
-//     msg.interface === 'org.bluez.Agent1' &&
-//     msg.member === 'AuthorizeService'
-//   ) {
-//     console.info('AuthorizeService returns');
-//     return true;
-//   }
-// });
+bus.addMethodHandler((msg) => {
+  console.log(msg);
+  if (
+    msg.path === '/bluezplayer/agent' &&
+    msg.interface === 'org.bluez.Agent1' &&
+    msg.member === 'RequestConfirmation'
+  ) {
+    console.info('RequestConfirmation returns');
+    return true;
+  }
+});
+
+bus.addMethodHandler((msg) => {
+  console.log(msg);
+  if (
+    msg.path === '/bluezplayer/agent' &&
+    msg.interface === 'org.bluez.Agent1' &&
+    msg.member === 'AuthorizeService'
+  ) {
+    console.info('AuthorizeService returns');
+    return true;
+  }
+});
 
 // bus.on('message', (msg) => {
 //   console.log('got a message: ', msg);
@@ -122,8 +122,8 @@ class BluezPlayer {
       const adapterProperties = adapter.getInterface('org.freedesktop.DBus.Properties');
       await adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', true));
   
-      agent = await bus.getProxyObject('org.bluez', '/bluezplayer/agent');
-      console.log(agent);
+      // agent = await bus.getProxyObject('org.bluez', '/bluezplayer/agent');
+      // console.log(agent);
   
       this.#adapterProperties.on('PropertiesChanged', (iface, changed) => {
         for (let prop of Object.keys(changed)) {
