@@ -16,7 +16,7 @@ bus.addMethodHandler(async (msg) => {
       const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
       deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
       
-      const returnMessage = Message.newMethodReturn(msg, 's', []);
+      const returnMessage = Message.newMethodReturn(msg, 's', ['']);
       bus.send(returnMessage);
       return true;
     }
@@ -24,7 +24,7 @@ bus.addMethodHandler(async (msg) => {
     if (msg.member === 'AuthorizeService') {
       console.info('AuthorizeService returns');
       
-      const returnMessage = Message.newMethodReturn(msg, 's', []);
+      const returnMessage = Message.newMethodReturn(msg, 's', ['']);
       bus.send(returnMessage);
       return true;
     }
