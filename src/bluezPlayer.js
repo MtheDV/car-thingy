@@ -2,20 +2,22 @@ const dbus = require('dbus-next');
 const bus = dbus.systemBus();
 const Variant = dbus.Variant;
 
-bus.addMethodHandler((msg) => {
-  console.log(msg);
+bus.addMethodHandler(async (msg) => {
   if (
     msg.path === '/bluezplayer/agent' &&
     msg.interface === 'org.bluez.Agent1' &&
     msg.member === 'RequestConfirmation'
   ) {
     console.info('RequestConfirmation returns');
+    const [devicePath, passkey] = msg.body;
+    const device = await bus.getProxyObject('org.bluez', devicePath);
+    const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
+    deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
     return true;
   }
 });
 
 bus.addMethodHandler((msg) => {
-  console.log(msg);
   if (
     msg.path === '/bluezplayer/agent' &&
     msg.interface === 'org.bluez.Agent1' &&
