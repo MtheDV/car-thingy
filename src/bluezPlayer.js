@@ -115,7 +115,7 @@ class BluezPlayer {
       const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
       const managerInterface = manager.getInterface('org.bluez.AgentManager1');
       console.log(managerInterface);
-      managerInterface.RegisterAgent('/bluezplayer/agent', 'NoInputNoOutput');
+      managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayOnly');
       managerInterface.RequestDefaultAgent('/bluezplayer/agent');
       console.log(managerInterface);
       console.log('BluezPlayer is a default agent');
