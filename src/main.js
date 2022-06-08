@@ -14,7 +14,7 @@ const createWindow = () => {
     }
   });
   
-  window.loadFile('index.html');
+  window.loadFile('./src/index.html');
 }
 
 const updateTrack = () => {

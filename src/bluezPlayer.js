@@ -4,15 +4,25 @@ const Variant = dbus.Variant;
 
 bus.addMethodHandler((msg) => {
   console.log(msg);
-  if (msg.path === '/org/bluez' && msg.interface === 'org.bluez.Agent1') {
-    if (msg.member === 'RequestConfirmation') {
-      console.info('RequestConfirmation returns');
-      return true;
-    }
-    if (msg.member === 'AuthorizeService') {
-      console.info('AuthorizeService returns');
-      return true;
-    }
+  if (
+    msg.path === '/org/bluez' &&
+    msg.interface === 'org.bluez.Agent1' &&
+    msg.member === 'RequestConfirmation'
+  ) {
+    console.info('RequestConfirmation returns');
+    return true;
+  }
+});
+
+bus.addMethodHandler((msg) => {
+  console.log(msg);
+  if (
+    msg.path === '/org/bluez' &&
+    msg.interface === 'org.bluez.Agent1' &&
+    msg.member === 'AuthorizeService'
+  ) {
+    console.info('AuthorizeService returns');
+    return true;
   }
 });
 
@@ -25,12 +35,14 @@ class BluezPlayer {
   device;
   alias;
   adapter;
+  agent;
   
-  constructor(player, device, alias, adapter, propertyChangeActions) {
+  constructor(player, device, alias, adapter, agent, propertyChangeActions) {
     this.player = player;
     this.device = device;
     this.alias = alias;
     this.adapter = adapter;
+    this.agent = agent;
     
     // Call each property action to update display
     Object.values(propertyChangeActions).forEach((action) => action());
@@ -48,7 +60,7 @@ class BluezPlayer {
     //     propertyChangeActions[prop]();
     //   }
     // });
-  
+    
     /**
      * Listen for adapter changes, the run actions.
      * Actions Available: https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/adapter-api.txt
@@ -82,6 +94,11 @@ class BluezPlayer {
     
     if (adapterPath) {
       adapter = await bus.getProxyObject('org.bluez', adapterPath);
+      const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
+      const managerInterface = manager.getInterface('org.bluez.AgentManager1');
+      console.log(managerInterface);
+      managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayOnly');
+      managerInterface.RequestDefaultAgent('/bluezplayer/agent');
     } else {
       throw Error('Unable to connect to bluetooth adapter!');
     }
@@ -101,7 +118,7 @@ class BluezPlayer {
       await adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', true));
     }
     
-    return new BluezPlayer(player, device, alias, adapter, propertyChangeActions);
+    return new BluezPlayer(player, device, alias, adapter, agent, propertyChangeActions);
   }
   
   get #interface() {

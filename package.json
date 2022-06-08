@@ -2,7 +2,7 @@
   "name": "car-thingy",
   "version": "1.0.0",
   "description": "Electron based media player application.",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --linux snap"
