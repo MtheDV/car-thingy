@@ -1,6 +1,7 @@
 const dbus = require('dbus-next');
 const bus = dbus.systemBus();
 const Variant = dbus.Variant;
+const Message = dbus.Message;
 
 bus.addMethodHandler(async (msg) => {
   console.log(msg);
@@ -10,17 +11,17 @@ bus.addMethodHandler(async (msg) => {
   ) {
     if (msg.member === 'RequestConfirmation') {
       console.info('RequestConfirmation returns');
-      const [devicePath, passkey] = msg.body;
+      const [devicePath, _] = msg.body;
       const device = await bus.getProxyObject('org.bluez', devicePath);
-      // console.log(device);
-      const deviceInterface = device.getInterface('org.bluez.Device1');
-      deviceInterface.Connect();
-      // deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
+      const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
+      deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
+      bus.send(new Message(msg));
       return true;
     }
     
     if (msg.member === 'AuthorizeService') {
       console.info('AuthorizeService returns');
+      bus.send(new Message(msg));
       return true;
     }
   }
@@ -111,7 +112,7 @@ class BluezPlayer {
       const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
       const managerInterface = manager.getInterface('org.bluez.AgentManager1');
       console.log(managerInterface);
-      managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayYesNo');
+      managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayOnly');
       managerInterface.RequestDefaultAgent('/bluezplayer/agent');
       console.log(managerInterface);
       console.log('BluezPlayer is a default agent');
