@@ -1,5 +1,20 @@
 const dbus = require('dbus-next');
 const bus = dbus.systemBus();
+const Variant = dbus.Variant;
+
+bus.addMethodHandler((msg) => {
+  console.log(msg);
+  if (msg.path === '/org/bluez' && msg.interface === 'org.bluez.Agent1') {
+    if (msg.member === 'RequestConfirmation') {
+      console.info('RequestConfirmation returns');
+      return true;
+    }
+    if (msg.member === 'AuthorizeService') {
+      console.info('AuthorizeService returns');
+      return true;
+    }
+  }
+});
 
 class BluezPlayer {
   player;
@@ -25,7 +40,7 @@ class BluezPlayer {
      */
     this.#properties.on('PropertiesChanged', (iface, changed) => {
       for (let prop of Object.keys(changed)) {
-        console.log(`Property changed: ${prop}`);
+        console.log(`Player Property changed: ${prop}`);
         propertyChangeActions[prop]();
       }
     });
@@ -36,7 +51,7 @@ class BluezPlayer {
      */
     this.#adapterProperties.on('PropertiesChanged', (iface, changed) => {
       for (let prop of Object.keys(changed)) {
-        console.log(`Property changed: ${prop}`);
+        console.log(`Adapter Property changed: ${prop}`);
       }
     });
   }
@@ -78,8 +93,8 @@ class BluezPlayer {
       alias = (await device.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias')).value;
     } else {
       // TODO: Wait for device and/or search for new device
-      const adapterInterface = adapter.getInterface('org.bluez.Adapter1');
-      adapterInterface.StartDiscovery();
+      const adapterProperties = adapter.getInterface('org.freedesktop.DBus.Properties');
+      await adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', true));
     }
     
     return new BluezPlayer(player, device, alias, adapter, propertyChangeActions);
