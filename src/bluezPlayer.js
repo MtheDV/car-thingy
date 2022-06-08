@@ -26,9 +26,9 @@ bus.addMethodHandler((msg) => {
   }
 });
 
-bus.on('message', (msg) => {
-  console.log('got a message: ', msg);
-});
+// bus.on('message', (msg) => {
+//   console.log('got a message: ', msg);
+// });
 
 class BluezPlayer {
   player;
@@ -83,6 +83,7 @@ class BluezPlayer {
     let player = null;
     let adapterPath = null;
     let adapter = null;
+    let agent = null;
     Object.entries(managedObjects).forEach(([path, managedObject]) => {
       if ('org.bluez.MediaPlayer1' in managedObject) {
         playerPath = path;
