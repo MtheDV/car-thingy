@@ -34,11 +34,11 @@ class BluezPlayer {
      * Listen for adapter changes, the run actions.
      * Actions Available: https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/adapter-api.txt
      */
-    // this.#adapterProperties.on('PropertiesChanged', (iface, changed) => {
-    //   for (let prop of Object.keys(changed)) {
-    //     console.log(`Property changed: ${prop}`);
-    //   }
-    // });
+    this.#adapterProperties.on('PropertiesChanged', (iface, changed) => {
+      for (let prop of Object.keys(changed)) {
+        console.log(`Property changed: ${prop}`);
+      }
+    });
   }
   
   static async initialize(propertyChangeActions) {
@@ -61,6 +61,12 @@ class BluezPlayer {
       }
     });
     
+    if (adapterPath) {
+      adapter = await bus.getProxyObject('org.bluez', adapterPath);
+    } else {
+      throw Error('Unable to connect to bluetooth adapter!');
+    }
+    
     // Get media device if found, otherwise search or wait for connected device
     let devicePath = null;
     let device = null;
@@ -72,12 +78,9 @@ class BluezPlayer {
       alias = (await device.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias')).value;
     } else {
       // TODO: Wait for device and/or search for new device
-      
+      const adapterInterface = adapter.getInterface('org.bluez.Adapter1');
+      adapterInterface.StartDiscovery();
     }
-  
-    adapter = await bus.getProxyObject('org.bluez', adapterPath);
-    
-    console.log(adapter);
     
     return new BluezPlayer(player, device, alias, adapter, propertyChangeActions);
   }

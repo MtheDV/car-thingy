@@ -39,7 +39,7 @@ const updatePosition = () => {
 }
 
 const updateDevice = () => {
-  window.webContents.send('set-device-update', 'Device 1');
+  window.webContents.send('set-device-update', bluezPlayer.alias);
 }
 
 app.whenReady().then(() => {
@@ -52,7 +52,8 @@ app.whenReady().then(() => {
   }).then(bluezPlayerObject => {
     bluezPlayer = bluezPlayerObject;
     console.info('Bluetooth Player Interface Initialized!');
-    console.info('Alias:', bluezPlayer.alias);
+    console.info('Connected to:', bluezPlayer.alias);
+    updateDevice();
   }).catch(err => {
     console.error('Unable to Initialize Bluetooth Interface!', err);
   });
