@@ -2,29 +2,29 @@ const dbus = require('dbus-next');
 const bus = dbus.systemBus();
 const Variant = dbus.Variant;
 
-bus.addMethodHandler((msg) => {
-  console.log(msg);
-  if (
-    msg.path === '/org/bluez' &&
-    msg.interface === 'org.bluez.Agent1' &&
-    msg.member === 'RequestConfirmation'
-  ) {
-    console.info('RequestConfirmation returns');
-    return true;
-  }
-});
-
-bus.addMethodHandler((msg) => {
-  console.log(msg);
-  if (
-    msg.path === '/org/bluez' &&
-    msg.interface === 'org.bluez.Agent1' &&
-    msg.member === 'AuthorizeService'
-  ) {
-    console.info('AuthorizeService returns');
-    return true;
-  }
-});
+// bus.addMethodHandler((msg) => {
+//   console.log(msg);
+//   if (
+//     msg.path === '/org/bluez' &&
+//     msg.interface === 'org.bluez.Agent1' &&
+//     msg.member === 'RequestConfirmation'
+//   ) {
+//     console.info('RequestConfirmation returns');
+//     return true;
+//   }
+// });
+//
+// bus.addMethodHandler((msg) => {
+//   console.log(msg);
+//   if (
+//     msg.path === '/org/bluez' &&
+//     msg.interface === 'org.bluez.Agent1' &&
+//     msg.member === 'AuthorizeService'
+//   ) {
+//     console.info('AuthorizeService returns');
+//     return true;
+//   }
+// });
 
 // bus.on('message', (msg) => {
 //   console.log('got a message: ', msg);
@@ -83,8 +83,6 @@ class BluezPlayer {
     let player = null;
     let adapterPath = null;
     let adapter = null;
-    let agentPath = null;
-    let agent = null;
     Object.entries(managedObjects).forEach(([path, managedObject]) => {
       if ('org.bluez.MediaPlayer1' in managedObject) {
         playerPath = path;
@@ -92,11 +90,9 @@ class BluezPlayer {
       if ('org.bluez.Adapter1' in managedObject) {
         adapterPath = path;
       }
-      if ('org.bluez.Agent1' in managedObject) {
-        agentPath = path;
-      }
     });
-    
+  
+    let agent = null;
     if (adapterPath) {
       adapter = await bus.getProxyObject('org.bluez', adapterPath);
       const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
@@ -105,11 +101,10 @@ class BluezPlayer {
       managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayOnly');
       managerInterface.RequestDefaultAgent('/bluezplayer/agent');
       console.log('BluezPlayer is a default agent');
-      agent = await bus.getProxyObject('org.bluez', '/');
-      console.log(agent);
-      console.log(agentPath);
-      const agentInterface = agent.getInterface('org.bluez.Agent1');
-      console.log(agentInterface);
+      // agent = await bus.getProxyObject('org.bluez', '/bluezplayer/agent');
+      // console.log(agent);
+      // const agentInterface = agent.getInterface('org.bluez.Agent1');
+      // console.log(agentInterface);
     } else {
       throw Error('Unable to connect to bluetooth adapter!');
     }
