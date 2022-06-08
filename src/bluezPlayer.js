@@ -12,9 +12,9 @@ bus.addMethodHandler(async (msg) => {
       console.info('RequestConfirmation returns');
       const [devicePath, passkey] = msg.body;
       const device = await bus.getProxyObject('org.bluez', devicePath);
-      console.log(device);
+      // console.log(device);
       const deviceInterface = device.getInterface('org.bluez.Device1');
-      deviceInterface.Pair();
+      deviceInterface.Connect();
       // deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
       return true;
     }
