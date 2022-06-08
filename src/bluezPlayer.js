@@ -15,13 +15,17 @@ bus.addMethodHandler(async (msg) => {
       const device = await bus.getProxyObject('org.bluez', devicePath);
       const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
       deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
-      bus.send(new Message(msg));
+      
+      const returnMessage = Message.newMethodReturn(msg, 's', []);
+      bus.send(returnMessage);
       return true;
     }
     
     if (msg.member === 'AuthorizeService') {
       console.info('AuthorizeService returns');
-      bus.send(new Message(msg));
+      
+      const returnMessage = Message.newMethodReturn(msg, 's', []);
+      bus.send(returnMessage);
       return true;
     }
   }
