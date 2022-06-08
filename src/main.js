@@ -45,6 +45,12 @@ const updateDevice = () => {
 app.whenReady().then(() => {
   createWindow();
   
+  /**
+   * TODO: If there is no bluetooth device found, then require the user to press a button and start scanning
+   * TODO: Then they can select their device from the list of devices scanned and connect to it.
+   * TODO: StartDiscovery -> ConnectDevice then init player with device
+   */
+  
   BluezPlayer.initialize({
     'Track': updateTrack,
     'Status': updateStatus,

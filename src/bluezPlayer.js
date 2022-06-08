@@ -95,12 +95,6 @@ class BluezPlayer {
     let agent = null;
     if (adapterPath) {
       adapter = await bus.getProxyObject('org.bluez', adapterPath);
-      const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
-      const managerInterface = manager.getInterface('org.bluez.AgentManager1');
-      console.log(managerInterface);
-      managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayOnly');
-      managerInterface.RequestDefaultAgent('/bluezplayer/agent');
-      console.log('BluezPlayer is a default agent');
       // agent = await bus.getProxyObject('org.bluez', '/bluezplayer/agent');
       // console.log(agent);
       // const agentInterface = agent.getInterface('org.bluez.Agent1');
@@ -120,6 +114,13 @@ class BluezPlayer {
       alias = (await device.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias')).value;
     } else {
       // TODO: Wait for device and/or search for new device
+      const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
+      const managerInterface = manager.getInterface('org.bluez.AgentManager1');
+      console.log(managerInterface);
+      managerInterface.RegisterAgent('/bluezplayer/agent', 'NoInputNoOutput');
+      managerInterface.RequestDefaultAgent('/bluezplayer/agent');
+      console.log(managerInterface);
+      console.log('BluezPlayer is a default agent');
       const adapterProperties = adapter.getInterface('org.freedesktop.DBus.Properties');
       await adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', true));
     }
