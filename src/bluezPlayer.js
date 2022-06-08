@@ -83,6 +83,7 @@ class BluezPlayer {
     let player = null;
     let adapterPath = null;
     let adapter = null;
+    let agentPath = null;
     let agent = null;
     Object.entries(managedObjects).forEach(([path, managedObject]) => {
       if ('org.bluez.MediaPlayer1' in managedObject) {
@@ -90,6 +91,9 @@ class BluezPlayer {
       }
       if ('org.bluez.Adapter1' in managedObject) {
         adapterPath = path;
+      }
+      if ('org.bluez.Agent1' in managedObject) {
+        agentPath = path;
       }
     });
     
@@ -103,6 +107,7 @@ class BluezPlayer {
       console.log('BluezPlayer is a default agent');
       agent = await bus.getProxyObject('org.bluez', '/');
       console.log(agent);
+      console.log(agentPath);
       const agentInterface = agent.getInterface('org.bluez.Agent1');
       console.log(agentInterface);
     } else {
