@@ -125,7 +125,7 @@ class BluezPlayer {
       // agent = await bus.getProxyObject('org.bluez', '/bluezplayer/agent');
       // console.log(agent);
   
-      this.#adapterProperties.on('PropertiesChanged', (iface, changed) => {
+      manager.getInterface('org.freedesktop.DBus.Properties').on('PropertiesChanged', (iface, changed) => {
         for (let prop of Object.keys(changed)) {
           console.log(`Adapter Property changed: ${prop}`);
         }
