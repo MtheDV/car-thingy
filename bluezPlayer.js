@@ -16,6 +16,10 @@ bus.addMethodHandler((msg) => {
   }
 });
 
+bus.on('message', (msg) => {
+  console.log('got a message: ', msg);
+});
+
 class BluezPlayer {
   player;
   device;
