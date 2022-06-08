@@ -100,6 +100,10 @@ class BluezPlayer {
       console.log(managerInterface);
       managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayOnly');
       managerInterface.RequestDefaultAgent('/bluezplayer/agent');
+      console.log('BluezPlayer is a default agent');
+      agent = await bus.getProxyObject('bluezplayer.agent', '/');
+      const agentInterface = agent.getInterface('org.bluez.Agent1');
+      console.log(agentInterface);
     } else {
       throw Error('Unable to connect to bluetooth adapter!');
     }
