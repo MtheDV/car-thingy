@@ -14,7 +14,8 @@ bus.addMethodHandler(async (msg) => {
       const device = await bus.getProxyObject('org.bluez', devicePath);
       console.log(device);
       const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
-      deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
+      deviceProperties.Pair();
+      // deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
       return true;
     }
     
