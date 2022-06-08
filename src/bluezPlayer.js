@@ -3,34 +3,26 @@ const bus = dbus.systemBus();
 const Variant = dbus.Variant;
 
 bus.addMethodHandler(async (msg) => {
+  console.log(msg);
   if (
     msg.path === '/bluezplayer/agent' &&
-    msg.interface === 'org.bluez.Agent1' &&
-    msg.member === 'RequestConfirmation'
+    msg.interface === 'org.bluez.Agent1'
   ) {
-    console.info('RequestConfirmation returns');
-    const [devicePath, passkey] = msg.body;
-    const device = await bus.getProxyObject('org.bluez', devicePath);
-    const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
-    deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
-    return true;
+    if (msg.member === 'RequestConfirmation') {
+      console.info('RequestConfirmation returns');
+      const [devicePath, passkey] = msg.body;
+      const device = await bus.getProxyObject('org.bluez', devicePath);
+      const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
+      deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
+      return true;
+    }
+    
+    if (msg.member === 'AuthorizeService') {
+      console.info('AuthorizeService returns');
+      return true;
+    }
   }
 });
-
-bus.addMethodHandler((msg) => {
-  if (
-    msg.path === '/bluezplayer/agent' &&
-    msg.interface === 'org.bluez.Agent1' &&
-    msg.member === 'AuthorizeService'
-  ) {
-    console.info('AuthorizeService returns');
-    return true;
-  }
-});
-
-// bus.on('message', (msg) => {
-//   console.log('got a message: ', msg);
-// });
 
 class BluezPlayer {
   player;
