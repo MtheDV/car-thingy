@@ -1,7 +1,8 @@
 const {app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
-const BluezPlayer = require('./bluezPlayer');
+const {BluezAgent, BluezPlayer} = require('./bluezPlayer');
 
+let bluezAgent = null;
 let bluezPlayer = null;
 let window = null
 
@@ -42,26 +43,49 @@ const updateDevice = () => {
   window.webContents.send('set-device-update', bluezPlayer.alias);
 }
 
-app.whenReady().then(() => {
-  createWindow();
-  
-  /**
-   * TODO: If there is no bluetooth device found, then require the user to press a button and start scanning
-   * TODO: Then they can select their device from the list of devices scanned and connect to it.
-   * TODO: StartDiscovery -> ConnectDevice then init player with device
-   */
-  
+const updateConnected = () => {
+  if (!bluezPlayer) return;
+  bluezPlayer.isConnected().then(connected => {
+    // TODO: IF FALSE, DESTROY BLUEZ INSTANCE AND OPEN AGENT TO START CONNECTING AGAIN
+    // TODO: IF TRUE, UPDATE DEVICE DETAILS
+    console.info('[PLAYER] Device connected:', connected);
+  }).catch(err => {
+    // TODO: SOMETHING WENT WRONG AND SHOULD DESTROY INSTANCE AND START CONNECTING AGAIN
+    console.error('[PLAYER] Something went wrong while checking if connected!', err)
+  });
+}
+
+const initializePlayer = () => {
   BluezPlayer.initialize({
     'Track': updateTrack,
     'Status': updateStatus,
     'Position': updatePosition
+  }, {
+    'Connected': updateConnected
   }).then(bluezPlayerObject => {
     bluezPlayer = bluezPlayerObject;
-    console.info('Bluetooth Player Interface Initialized!');
-    console.info('Connected to:', bluezPlayer.alias);
+    console.info('[PLAYER] Bluetooth player interface initialized!');
+    console.info('[PLAYER] Connected to:', bluezPlayer.alias);
     updateDevice();
   }).catch(err => {
-    console.error('Unable to Initialize Bluetooth Interface!', err);
+    console.error('[PLAYER] Unable to initialize bluetooth player interface!', err);
+    // There was no device found, so set the agent to pairing mode
+    bluezAgent.openDiscovery().then(() => {
+      console.info('[AGENT] Started discovering devices.');
+    });
+  });
+}
+
+app.whenReady().then(async () => {
+  createWindow();
+  
+  BluezAgent.initialize('Subaru Legacy Audio', initializePlayer).then(bluezAgentObject => {
+    bluezAgent = bluezAgentObject;
+    console.info('[AGENT] Bluetooth agent interface initialized!');
+    initializePlayer();
+  }).catch(err => {
+    console.error('[AGENT] Unable to initialize bluetooth agent!', err);
+    // TODO: Disable bluetooth functions on frontend
   });
   
   app.on('activate', () => {
