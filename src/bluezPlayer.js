@@ -29,17 +29,19 @@ class BluezAgent {
           deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
           
           // Listen for device connected property change, then call onConnected function
-          deviceProperties.on('PropertiesChanged', (iface, changed) => {
+          const propertyChanged = (iface, changed) => {
             for (let prop of Object.keys(changed)) {
               console.log(`[AGENT] Connecting Device Property changed: ${prop}`);
               if (prop === 'Connected' && changed[prop]) {
                 // Stop discovering and run connected function
                 this.closeDiscovery().then(() => {
                   onConnected();
+                  deviceProperties.removeListener('PropertiesChanged', propertyChanged);
                 }).catch();
               }
             }
-          });
+          }
+          deviceProperties.on('PropertiesChanged', propertyChanged);
           
           // Send an empty return message to notify the bluetooth device to confirm connection
           const returnMessage = Message.newMethodReturn(msg, 's', ['']);
