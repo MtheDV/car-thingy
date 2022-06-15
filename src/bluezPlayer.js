@@ -14,6 +14,8 @@ class BluezAgent {
      * to auto pair when a device requests itself to connect.
      */
     bus.addMethodHandler(async (msg) => {
+      console.info(msg);
+      
       if (
         msg.path === '/bluezplayer/agent' &&
         msg.interface === 'org.bluez.Agent1'
