@@ -65,6 +65,7 @@ const updateConnected = () => {
 }
 
 const initializePlayer = () => {
+  console.info('[AGENT] Initializing player.')
   BluezPlayer.initialize({
     'Track': updateTrack,
     'Status': updateStatus,
