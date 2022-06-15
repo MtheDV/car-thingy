@@ -45,13 +45,22 @@ const updateDevice = () => {
 
 const updateConnected = () => {
   if (!bluezPlayer) return;
-  bluezPlayer.isConnected().then(connected => {
-    // TODO: IF FALSE, DESTROY BLUEZ INSTANCE AND OPEN AGENT TO START CONNECTING AGAIN
-    // TODO: IF TRUE, UPDATE DEVICE DETAILS
+  bluezPlayer.isConnected().then(async connected => {
     console.info('[PLAYER] Device connected:', connected);
-  }).catch(err => {
-    // TODO: SOMETHING WENT WRONG AND SHOULD DESTROY INSTANCE AND START CONNECTING AGAIN
+    // If connected, stop any discovery, otherwise clean up player and start discovery
+    if (connected) {
+      await bluezAgent.closeDiscovery();
+    } else {
+      bluezPlayer.cleanUp();
+      bluezPlayer = undefined;
+      await bluezAgent.openDiscovery();
+    }
+  }).catch(async err => {
     console.error('[PLAYER] Something went wrong while checking if connected!', err)
+    // Clean up player and destroy object, then start discovery
+    bluezPlayer.cleanUp();
+    bluezPlayer = undefined;
+    await bluezAgent.openDiscovery();
   });
 }
 
