@@ -15,7 +15,7 @@ class BluezAgent {
      */
     bus.addMethodHandler(async (msg) => {
       if (
-        msg.path === '/org/bluez' &&
+        msg.path === '/bluezplayer/agent' &&
         msg.interface === 'org.bluez.Agent1'
       ) {
         if (msg.member === 'RequestConfirmation') {
@@ -78,10 +78,10 @@ class BluezAgent {
     if (adapterPath) {
       adapter = await bus.getProxyObject('org.bluez', adapterPath);
       await adapter.getInterface('org.freedesktop.DBus.Properties').Set('org.bluez.Adapter1', 'Alias', new Variant('s', adapterAlias));
-      // const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
-      // const managerInterface = manager.getInterface('org.bluez.AgentManager1');
-      // managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayOnly');
-      // managerInterface.RequestDefaultAgent('/bluezplayer/agent');
+      const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
+      const managerInterface = manager.getInterface('org.bluez.AgentManager1');
+      managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayOnly');
+      managerInterface.RequestDefaultAgent('/bluezplayer/agent');
     } else {
       throw Error('Unable to connect to bluetooth adapter!');
     }
