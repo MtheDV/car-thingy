@@ -7,18 +7,8 @@ const Message = dbus.Message;
 class BluezAgent {
   adapter;
   
-  constructor(adapter, onDiscovery) {
+  constructor(adapter, onConnected) {
     this.adapter = adapter;
-  
-    /**
-     * Listen for property changes, then run provided actions.
-     * Actions Available: https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/media-api.txt
-     */
-    this.#adapterProperties.on('PropertiesChanged', (iface, changed) => {
-      for (let prop of Object.keys(changed)) {
-        console.log(`Adapter Property changed: ${prop}`);
-      }
-    });
     
     /**
      * Add custom method handler for RequestConfirmation and AuthorizeService
@@ -30,17 +20,24 @@ class BluezAgent {
         msg.interface === 'org.bluez.Agent1'
       ) {
         if (msg.member === 'RequestConfirmation') {
-          console.info('RequestConfirmation returns');
+          console.info('[AGENT] RequestConfirmation returns');
           
           // Get the connecting device and set it as trusted
           const [devicePath, _] = msg.body;
           const device = await bus.getProxyObject('org.bluez', devicePath);
           const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
           deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
-  
+          
+          // Listen for device connected property change, then call onConnected function
           deviceProperties.on('PropertiesChanged', (iface, changed) => {
             for (let prop of Object.keys(changed)) {
-              console.log(`Connecting Device Property changed: ${prop}`);
+              console.log(`[AGENT] Connecting Device Property changed: ${prop}`);
+              if (prop === 'Connected' && changed[prop]) {
+                // Stop discovering and run connected function
+                this.closeDiscovery().then(() => {
+                  onConnected();
+                }).catch();
+              }
             }
           });
           
@@ -52,7 +49,7 @@ class BluezAgent {
         }
         
         if (msg.member === 'AuthorizeService') {
-          console.info('AuthorizeService returns');
+          console.info('[AGENT] AuthorizeService returns');
           
           // Send an empty return message to notify the bluetooth device to authorize connection
           const returnMessage = Message.newMethodReturn(msg, 's', ['']);
@@ -63,7 +60,7 @@ class BluezAgent {
     });
   }
   
-  static async initialize(adapterAlias, onDiscovery) {
+  static async initialize(adapterAlias, onConnected) {
     // Connect to the bluez dbus, then get the objects it manages
     const bluezObj = await bus.getProxyObject('org.bluez', '/');
     const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
@@ -89,7 +86,7 @@ class BluezAgent {
       throw Error('Unable to connect to bluetooth adapter!');
     }
     
-    return new BluezAgent(adapter, onDiscovery);
+    return new BluezAgent(adapter, onConnected);
   }
   
   get #adapterProperties() {
