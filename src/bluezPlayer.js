@@ -1,4 +1,5 @@
 const dbus = require('dbus-next');
+const path = require('path');
 const bus = dbus.systemBus();
 const Variant = dbus.Variant;
 const Message = dbus.Message;
@@ -8,6 +9,16 @@ class BluezAgent {
   
   constructor(adapter, onDiscovery) {
     this.adapter = adapter;
+  
+    /**
+     * Listen for property changes, then run provided actions.
+     * Actions Available: https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/adapter-api.txt
+     */
+    this.#adapterProperties.on('PropertiesChanged', (iface, changed) => {
+      for (let prop of Object.keys(changed)) {
+        console.log(`Player Property changed: ${prop}`);
+      }
+    });
     
     /**
      * Add custom method handler for RequestConfirmation and AuthorizeService
@@ -30,10 +41,6 @@ class BluezAgent {
           // Send an empty return message to notify the bluetooth device to confirm connection
           const returnMessage = Message.newMethodReturn(msg, 's', ['']);
           bus.send(returnMessage);
-          
-          // Stop discovering
-          await this.closeDiscovery();
-          onDiscovery();
           
           return true;
         }
@@ -79,16 +86,16 @@ class BluezAgent {
     return new BluezAgent(adapter, onDiscovery);
   }
   
-  get #adapterInterface() {
+  get #adapterProperties() {
     return this.adapter.getInterface('org.freedesktop.DBus.Properties');
   }
   
   async openDiscovery() {
-    await this.#adapterInterface.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', true));
+    await this.#adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', true));
   }
   
   async closeDiscovery() {
-    await this.#adapterInterface.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', false));
+    await this.#adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', false));
   }
 }
 
