@@ -31,7 +31,7 @@ class BluezAgent {
           deviceProperties.on('PropertiesChanged', (iface, changed) => {
             for (let prop of Object.keys(changed)) {
               console.log(`[AGENT] Connecting Device Property changed: ${prop}`);
-              if (prop === 'Connected' && changed[prop]) {
+              if (prop === 'Connected' && changed[prop] === true) {
                 // Stop discovering and run connected function
                 this.closeDiscovery().then(() => {
                   onConnected();
@@ -78,11 +78,10 @@ class BluezAgent {
     if (adapterPath) {
       adapter = await bus.getProxyObject('org.bluez', adapterPath);
       await adapter.getInterface('org.freedesktop.DBus.Properties').Set('org.bluez.Adapter1', 'Alias', new Variant('s', adapterAlias));
-      await adapter.getInterface('org.freedesktop.DBus.Properties').Set('org.bluez.Adapter1', 'Pairable', new Variant('b', true));
-      const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
-      const managerInterface = manager.getInterface('org.bluez.AgentManager1');
-      managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayYesNo');
-      managerInterface.RequestDefaultAgent('/bluezplayer/agent');
+      // const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
+      // const managerInterface = manager.getInterface('org.bluez.AgentManager1');
+      // managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayOnly');
+      // managerInterface.RequestDefaultAgent('/bluezplayer/agent');
     } else {
       throw Error('Unable to connect to bluetooth adapter!');
     }
