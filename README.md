@@ -1,6 +1,9 @@
 # Spotify Car Thing Based Media Player
 An Electron JS media player app inspired by the Spotify Car Thing. Built to run on a Raspberry-Pi.
 
+## Design Resources
+ - [Figma Design Doc](https://www.figma.com/file/80n7nxBtdaQ5wpCydhdJlL/Untitled?node-id=0%3A1)
+
 ## Development Resources
  - [Electron Based Kiosk Snap](https://ubuntu.com/tutorials/electron-kiosk#1-overview)
  - [Ubuntu Core Virtual Machine With Graphics Support](https://ubuntu.com/tutorials/ubuntu-core-preparing-a-virtual-machine-with-graphics-support#1-overview)
