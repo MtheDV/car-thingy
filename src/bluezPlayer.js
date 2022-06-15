@@ -14,8 +14,6 @@ class BluezAgent {
      * to auto pair when a device requests itself to connect.
      */
     bus.addMethodHandler(async (msg) => {
-      console.info(msg);
-      
       if (
         msg.path === '/bluezplayer/agent' &&
         msg.interface === 'org.bluez.Agent1'
@@ -31,11 +29,9 @@ class BluezAgent {
           
           // Listen for device connected property change, then call onConnected function
           deviceProperties.on('PropertiesChanged', (iface, changed) => {
-            console.info(changed);
-            console.info(iface);
             for (let prop of Object.keys(changed)) {
               console.log(`[AGENT] Connecting Device Property changed: ${prop}`);
-              if (prop === 'Connected' && changed[prop]) {
+              if (prop === 'Connected' && changed[prop].value === true) {
                 // Stop discovering and run connected function
                 this.closeDiscovery().then(() => {
                   onConnected();
@@ -48,7 +44,6 @@ class BluezAgent {
           // Send an empty return message to notify the bluetooth device to confirm connection
           const returnMessage = Message.newMethodReturn(msg, 's', ['']);
           bus.send(returnMessage);
-          
           return true;
         }
         
@@ -99,6 +94,28 @@ class BluezAgent {
   
   async openDiscovery() {
     await this.#adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', true));
+    
+    // Find bluetooth devices, then attempt to pair to the device
+    const bluezObj = await bus.getProxyObject('org.bluez', '/');
+    const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
+    const managedObjects = await manager.GetManagedObjects();
+  
+    // Check if there is already a media player device within the managed objects
+    let playerPath;
+    Object.entries(managedObjects).forEach(([path, managedObject]) => {
+      if ('org.bluez.MediaPlayer1' in managedObject) {
+        playerPath = path;
+      }
+    });
+  
+    // Get device and pair with it
+    if (playerPath) {
+      const player = await bus.getProxyObject('org.bluez', playerPath);
+      const devicePath = await player.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.MediaPlayer1', 'Device');
+      const device = await bus.getProxyObject('org.bluez', devicePath.value);
+      console.info(device);
+      device.getInterface('org.bluez.Device1').Pair();
+    }
   }
   
   async closeDiscovery() {
@@ -123,7 +140,7 @@ class BluezPlayer {
      */
     this.#playerProperties.on('PropertiesChanged', (iface, changed) => {
       for (let prop of Object.keys(changed)) {
-        console.log(`Player Property changed: ${prop}`);
+        console.log(`[PLAYER] Player Property changed: ${prop}`);
         playerPropertyChangeActions[prop]();
       }
     });
@@ -134,7 +151,7 @@ class BluezPlayer {
      */
     this.#deviceProperties.on('PropertiesChanged', (iface, changed) => {
       for (let prop of Object.keys(changed)) {
-        console.log(`Device Property changed: ${prop}`);
+        console.log(`[PLAYER] Device Property changed: ${prop}`);
         devicePropertyChangeActions[prop]();
       }
     });
