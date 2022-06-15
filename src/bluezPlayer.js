@@ -29,9 +29,11 @@ class BluezAgent {
           
           // Listen for device connected property change, then call onConnected function
           deviceProperties.on('PropertiesChanged', (iface, changed) => {
+            console.info(changed);
+            console.info(iface);
             for (let prop of Object.keys(changed)) {
               console.log(`[AGENT] Connecting Device Property changed: ${prop}`);
-              if (prop === 'Connected' && changed[prop] === true) {
+              if (prop === 'Connected' && changed[prop]) {
                 // Stop discovering and run connected function
                 this.closeDiscovery().then(() => {
                   onConnected();
