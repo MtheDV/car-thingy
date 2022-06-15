@@ -93,12 +93,15 @@ class BluezAgent {
   }
   
   async openDiscovery() {
+    console.info('[AGENT] Opening discoverable');
     await this.#adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', true));
     
     // Find bluetooth devices, then attempt to pair to the device
     const bluezObj = await bus.getProxyObject('org.bluez', '/');
     const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
     const managedObjects = await manager.GetManagedObjects();
+  
+    console.info(managedObjects);
   
     // Check if there is already a media player device within the managed objects
     let playerPath;
@@ -119,6 +122,7 @@ class BluezAgent {
   }
   
   async closeDiscovery() {
+    console.info('[AGENT] Closing discoverable');
     await this.#adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', false));
   }
 }
