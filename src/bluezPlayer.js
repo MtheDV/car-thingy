@@ -1,5 +1,4 @@
 const dbus = require('dbus-next');
-const path = require('path');
 const bus = dbus.systemBus();
 const Variant = dbus.Variant;
 const Message = dbus.Message;
@@ -107,6 +106,7 @@ class BluezPlayer {
   player;
   device;
   alias;
+  deviceListener;
   
   constructor(player, device, alias, playerPropertyChangeActions, devicePropertyChangeActions) {
     this.player = player;
@@ -134,6 +134,15 @@ class BluezPlayer {
         devicePropertyChangeActions[prop]();
       }
     });
+  
+    /**
+     * Create listener to watch for device property changes every X seconds
+     */
+    this.deviceListener = setInterval(() => {
+      Object.values(devicePropertyChangeActions).forEach((func) => {
+        func();
+      });
+    }, 3000);
   }
   
   static async initialize(playerPropertyChangeActions, devicePropertyChangeActions) {
@@ -170,6 +179,7 @@ class BluezPlayer {
   cleanUp() {
     this.#playerProperties.removeAllListeners('PropertiesChanged');
     this.#deviceProperties.removeAllListeners('PropertiesChanged');
+    clearInterval(this.deviceListener);
   }
   
   get #playerInterface() {
