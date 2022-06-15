@@ -81,7 +81,7 @@ class BluezAgent {
       await adapter.getInterface('org.freedesktop.DBus.Properties').Set('org.bluez.Adapter1', 'Pairable', new Variant('b', true));
       const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
       const managerInterface = manager.getInterface('org.bluez.AgentManager1');
-      managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayOnly');
+      managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayYesNo');
       managerInterface.RequestDefaultAgent('/bluezplayer/agent');
     } else {
       throw Error('Unable to connect to bluetooth adapter!');
