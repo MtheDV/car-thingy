@@ -96,7 +96,7 @@ class BluezAgent {
     console.info('[AGENT] Opening discoverable');
     await this.#adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', true));
     
-    // Find bluetooth devices, then attempt to pair to the device
+    // Find bluetooth devices, then attempt to connect to the device
     const bluezObj = await bus.getProxyObject('org.bluez', '/');
     const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
     const managedObjects = await manager.GetManagedObjects();
@@ -111,11 +111,11 @@ class BluezAgent {
       }
     });
   
-    // Get device and pair with it
+    // Get device and connect with it
     if (devicePath) {
       const device = await bus.getProxyObject('org.bluez', devicePath);
       console.info(device);
-      device.getInterface('org.bluez.Device1').Pair();
+      device.getInterface('org.bluez.Device1').Connect();
     }
   }
   
