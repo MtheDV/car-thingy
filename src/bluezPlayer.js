@@ -103,19 +103,17 @@ class BluezAgent {
   
     console.info(managedObjects);
   
-    // Check if there is already a media player device within the managed objects
-    let playerPath;
+    // Check if there is already a device within the managed objects
+    let devicePath;
     Object.entries(managedObjects).forEach(([path, managedObject]) => {
-      if ('org.bluez.MediaPlayer1' in managedObject) {
-        playerPath = path;
+      if ('org.bluez.Device1' in managedObject) {
+        devicePath = path;
       }
     });
   
     // Get device and pair with it
-    if (playerPath) {
-      const player = await bus.getProxyObject('org.bluez', playerPath);
-      const devicePath = await player.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.MediaPlayer1', 'Device');
-      const device = await bus.getProxyObject('org.bluez', devicePath.value);
+    if (devicePath) {
+      const device = await bus.getProxyObject('org.bluez', devicePath);
       console.info(device);
       device.getInterface('org.bluez.Device1').Pair();
     }
