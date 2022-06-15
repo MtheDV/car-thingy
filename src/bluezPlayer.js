@@ -12,11 +12,11 @@ class BluezAgent {
   
     /**
      * Listen for property changes, then run provided actions.
-     * Actions Available: https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/adapter-api.txt
+     * Actions Available: https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/media-api.txt
      */
     this.#adapterProperties.on('PropertiesChanged', (iface, changed) => {
       for (let prop of Object.keys(changed)) {
-        console.log(`Player Property changed: ${prop}`);
+        console.log(`Adapter Property changed: ${prop}`);
       }
     });
     
@@ -37,6 +37,12 @@ class BluezAgent {
           const device = await bus.getProxyObject('org.bluez', devicePath);
           const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
           deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
+  
+          deviceProperties.on('PropertiesChanged', (iface, changed) => {
+            for (let prop of Object.keys(changed)) {
+              console.log(`Connecting Device Property changed: ${prop}`);
+            }
+          });
           
           // Send an empty return message to notify the bluetooth device to confirm connection
           const returnMessage = Message.newMethodReturn(msg, 's', ['']);
