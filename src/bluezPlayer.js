@@ -84,6 +84,11 @@ class BluezAgent {
     } else {
       throw Error('Unable to connect to bluetooth adapter!');
     }
+  
+    const bluezObj1 = await bus.getProxyObject('org.bluez', '/');
+    const manager1 = bluezObj1.getInterface('org.freedesktop.DBus.ObjectManager');
+    const managedObjects1 = await manager1.GetManagedObjects();
+    console.log(managedObjects1);
     
     return new BluezAgent(adapter, onConnected);
   }
