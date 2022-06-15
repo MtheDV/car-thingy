@@ -78,6 +78,7 @@ class BluezAgent {
     if (adapterPath) {
       adapter = await bus.getProxyObject('org.bluez', adapterPath);
       await adapter.getInterface('org.freedesktop.DBus.Properties').Set('org.bluez.Adapter1', 'Alias', new Variant('s', adapterAlias));
+      await adapter.getInterface('org.freedesktop.DBus.Properties').Set('org.bluez.Adapter1', 'Pairable', new Variant('b', true));
       const manager = await bus.getProxyObject('org.bluez', '/org/bluez');
       const managerInterface = manager.getInterface('org.bluez.AgentManager1');
       managerInterface.RegisterAgent('/bluezplayer/agent', 'DisplayOnly');
