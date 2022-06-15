@@ -15,7 +15,7 @@ class BluezAgent {
      */
     bus.addMethodHandler(async (msg) => {
       if (
-        msg.path === '/bluezplayer/agent' &&
+        msg.path === '/org/bluez' &&
         msg.interface === 'org.bluez.Agent1'
       ) {
         if (msg.member === 'RequestConfirmation') {
