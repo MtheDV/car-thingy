@@ -46,7 +46,7 @@ const updateDevice = () => {
 const updateDevicesPaired = () => {
   const sendPairedDevices = () => {
     bluezAgent.getPairedDevices().then(deviceList => {
-      console.info('[AGENT] Updating paired devices:', deviceList);
+      console.info('[AGENT] Updating paired devices.');
       window.webContents.send('set-agent-device-list', deviceList);
     });
   }

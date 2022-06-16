@@ -96,6 +96,8 @@ window.api.onAgentDeviceListUpdate((_, value) => {
     button.setAttribute('data-path', device.path);
     button.innerText = device.alias ?? 'Unknown Device';
     button.addEventListener('click', () => {
+      console.log(device.path);
+      console.log(buttonCurrentDevice.getAttribute('data-path'));
       if (buttonCurrentDevice.getAttribute('data-path') === device.path) {
         swapDeviceView();
       }
