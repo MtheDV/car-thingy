@@ -155,15 +155,17 @@ ipcMain.on('set-audio-previous', () => {
  */
 ipcMain.on('set-agent-connect', (_, deviceIndex) => {
   if (!bluezAgent) return;
-  if (bluezPlayer && bluezAgent.deviceList[deviceIndex].path === bluezPlayer.device.path) return;
-  if (bluezPlayer) {
-    bluezPlayer.cleanUp();
-    bluezPlayer.disconnect();
-    bluezPlayer = undefined;
-  }
-  bluezAgent.connectToDevice(deviceIndex, initializePlayer).then(() => {
-    console.info('[AGENT] Connecting to device.')
-  }).catch();
+  bluezAgent.getPairedDevices().then(deviceList => {
+    if (bluezPlayer && deviceList[deviceIndex].path === bluezPlayer.device.path) return;
+    if (bluezPlayer) {
+      bluezPlayer.cleanUp();
+      bluezPlayer.disconnect();
+      bluezPlayer = undefined;
+    }
+    bluezAgent.connectToDevice(deviceIndex, initializePlayer).then(() => {
+      console.info('[AGENT] Connecting to device.')
+    }).catch();
+  });
 });
 
 ipcMain.on('set-agent-discover', () => {
