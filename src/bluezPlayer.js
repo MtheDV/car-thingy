@@ -121,7 +121,7 @@ class BluezAgent {
   async connectToDevice(deviceIndex) {
     console.info('[AGENT] Connecting to device');
     const device = await bus.getProxyObject('org.bluez', this.deviceList[deviceIndex].path);
-    device.getInterface('org.bluez.Device1').Connect();
+    await device.getInterface('org.bluez.Device1').Connect();
   }
 }
 
