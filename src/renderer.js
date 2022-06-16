@@ -39,6 +39,7 @@ buttonPrevious.addEventListener('click', audioPrevious);
  * When the track is updated, change the title and artist
  */
 window.api.onTrackUpdate((_, value) => {
+  console.info(value);
   document.getElementById('track-title').innerText = value.Title;
   document.getElementById('track-artist').innerText = value.Artist;
 });
