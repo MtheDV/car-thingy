@@ -43,7 +43,7 @@ class BluezAgent {
               if (prop === 'Connected' && changed[prop].value === true) {
                 // Stop discovering and run connected function
                 this.closeDiscovery().then(() => {
-                  onConnected();
+                  onConnected(devicePath);
                   deviceProperties.removeAllListeners('PropertiesChanged');
                 }).catch();
               }
@@ -132,7 +132,7 @@ class BluezAgent {
         if (prop === 'Connected' && changed[prop].value === true && hasPlayer) {
           this.closeDiscovery().finally(() => {
             deviceProperties.removeAllListeners('PropertiesChanged');
-            onConnect();
+            onConnect(this.deviceList[deviceIndex].path);
           });
         }
       }
@@ -184,7 +184,17 @@ class BluezPlayer {
     }, 3000);
   }
   
-  static async initialize(playerPropertyChangeActions, devicePropertyChangeActions) {
+  static async initialize(selectedDevicePath, playerPropertyChangeActions, devicePropertyChangeActions) {
+    // Connect to selected device instead of searching for the latest
+    if (selectedDevicePath) {
+      const device = await bus.getProxyObject('org.bluez', selectedDevicePath);
+      console.info(device);
+      const alias = (await device.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias')).value;
+      // const playerPath = await player.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.MediaPlayer1', 'Player');
+      const player = undefined;
+      return new BluezPlayer(player, device, alias, playerPropertyChangeActions, devicePropertyChangeActions);
+    }
+    
     // Connect to the bluez dbus, then get the objects it manages
     const bluezObj = await bus.getProxyObject('org.bluez', '/');
     const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
@@ -221,12 +231,21 @@ class BluezPlayer {
     clearInterval(this.deviceListener);
   }
   
+  disconnect() {
+    if (!this.device) return;
+    this.#deviceInterface.Disconnect();
+  }
+  
   get #playerInterface() {
     return this.player.getInterface('org.bluez.MediaPlayer1');
   }
   
   get #playerProperties() {
     return this.player.getInterface('org.freedesktop.DBus.Properties');
+  }
+  
+  get #deviceInterface() {
+    return this.device.getInterface('org.bluez.Device1');
   }
   
   get #deviceProperties() {

@@ -66,15 +66,18 @@ const updateConnected = () => {
   });
 }
 
-const initializePlayer = () => {
+const initializePlayer = (devicePath) => {
   console.info('[AGENT] Initializing player.')
-  BluezPlayer.initialize({
-    'Track': updateTrack,
-    'Status': updateStatus,
-    'Position': updatePosition
-  }, {
-    'Connected': updateConnected
-  }).then(bluezPlayerObject => {
+  BluezPlayer.initialize(
+    devicePath,
+    {
+      'Track': updateTrack,
+      'Status': updateStatus,
+      'Position': updatePosition
+    }, {
+      'Connected': updateConnected
+    }
+  ).then(bluezPlayerObject => {
     bluezPlayer = bluezPlayerObject;
     console.info('[PLAYER] Bluetooth player interface initialized!');
     console.info('[PLAYER] Connected to:', bluezPlayer.alias);
@@ -138,6 +141,11 @@ ipcMain.on('set-audio-previous', () => {
  */
 ipcMain.on('set-agent-connect', (_, deviceIndex) => {
   if (!bluezAgent) return;
+  // Disconnect any current devices
+  if (bluezPlayer) {
+    bluezPlayer.cleanUp();
+    bluezPlayer.disconnect();
+  }
   bluezAgent.connectToDevice(deviceIndex, initializePlayer).then(() => {
     console.info('[AGENT] Connecting to device.')
   }).catch();
