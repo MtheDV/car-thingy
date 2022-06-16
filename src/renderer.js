@@ -81,3 +81,6 @@ window.api.onAgentDeviceListUpdate((_, value) => {
 /**
  * Enter pairing mode when connected
  */
+document.getElementById('pair-device').addEventListener('click', () => {
+  window.api.setAgentDiscover();
+});

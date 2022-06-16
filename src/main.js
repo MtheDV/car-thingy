@@ -51,20 +51,18 @@ const updateConnected = () => {
   if (!bluezPlayer) return;
   bluezPlayer.isConnected().then(async connected => {
     console.info('[PLAYER] Device connected:', connected);
-    // If connected, stop any discovery, otherwise clean up player and start discovery
+    // If connected, stop any discovery, otherwise clean up player
     if (connected) {
       await bluezAgent.closeDiscovery();
     } else {
       bluezPlayer.cleanUp();
       bluezPlayer = undefined;
-      await bluezAgent.openDiscovery();
     }
   }).catch(async err => {
     console.error('[PLAYER] Something went wrong while checking if connected!', err)
-    // Clean up player and destroy object, then start discovery
+    // Clean up player and destroy object
     bluezPlayer.cleanUp();
     bluezPlayer = undefined;
-    await bluezAgent.openDiscovery();
   });
 }
 
@@ -83,10 +81,6 @@ const initializePlayer = () => {
     updateDevice();
   }).catch(err => {
     console.error('[PLAYER] Unable to initialize bluetooth player interface!', err);
-    // There was no device found, so set the agent to pairing mode
-    bluezAgent.openDiscovery().then(() => {
-      console.info('[AGENT] Started discovering devices.');
-    });
   });
 }
 
