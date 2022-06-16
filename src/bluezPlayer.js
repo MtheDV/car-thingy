@@ -131,9 +131,8 @@ class BluezAgent {
           });
         }
       }
-      device.getInterface('org.bluez.Device1').Connect();
     });
-    
+    device.getInterface('org.bluez.Device1').Connect();
   }
 }
 
