@@ -58,3 +58,21 @@ window.api.onStatusUpdate((_, value) => {
 window.api.onDeviceUpdate((_, value) => {
   document.getElementById('device-alias').innerText = `Connected to ${value}`;
 });
+
+/**
+ * Wait to receive the device list and update it visually
+ */
+window.api.onAgentDeviceListUpdate((_, value) => {
+  const devices = value.map(device => {
+    const li = document.createElement('li');
+    li.innerText = device.alias ?? 'Unknown Device';
+    li.setAttribute('data-path', device.path);
+    return li;
+  })
+  document.getElementById('device-list').innerHTML = '';
+  document.getElementById('device-list').append(devices);
+})
+
+/**
+ * Connect to device when the button is pressed
+ */

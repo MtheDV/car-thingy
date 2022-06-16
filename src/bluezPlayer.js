@@ -5,9 +5,11 @@ const Message = dbus.Message;
 
 class BluezAgent {
   adapter;
+  deviceList;
   
-  constructor(adapter, onConnected) {
+  constructor(adapter, deviceList, onConnected, updateDevicesPaired) {
     this.adapter = adapter;
+    this.deviceList = deviceList;
     
     /**
      * Add custom method handler for RequestConfirmation and AuthorizeService
@@ -25,12 +27,19 @@ class BluezAgent {
           const [devicePath, _] = msg.body;
           const device = await bus.getProxyObject('org.bluez', devicePath);
           const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
-          deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
+          await deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
           
           // Listen for device connected property change, then call onConnected function
           deviceProperties.on('PropertiesChanged', (iface, changed) => {
             for (let prop of Object.keys(changed)) {
               console.log(`[AGENT] Connecting Device Property changed: ${prop}`);
+              if (prop === 'Paired' && changed[prop].value === true) {
+                // Add to device list if the device is paired
+                if (!this.deviceList.includes(devicePath)) {
+                  this.deviceList.push(devicePath);
+                  updateDevicesPaired();
+                }
+              }
               if (prop === 'Connected' && changed[prop].value === true) {
                 // Stop discovering and run connected function
                 this.closeDiscovery().then(() => {
@@ -59,7 +68,7 @@ class BluezAgent {
     });
   }
   
-  static async initialize(adapterAlias, onConnected) {
+  static async initialize(adapterAlias, onConnected, updateDevicesPaired) {
     // Connect to the bluez dbus, then get the objects it manages
     const bluezObj = await bus.getProxyObject('org.bluez', '/');
     const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
@@ -68,12 +77,22 @@ class BluezAgent {
     // Get the bluetooth adapter to control when the device can be discovered
     let adapterPath = null;
     let adapter = null;
-    Object.entries(managedObjects).forEach(([path, managedObject]) => {
+    let deviceList = [];
+    for (const [path, managedObject] of Object.entries(managedObjects)) {
       if ('org.bluez.Adapter1' in managedObject) {
         adapterPath = path;
       }
-    });
-    
+      if ('org.bluez.Device1' in managedObject) {
+        deviceList.push({
+          path,
+          alias: (await bus.getProxyObject('org.bluez', adapterPath).getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias')).value
+        });
+      }
+    }
+  
+    updateDevicesPaired();
+    console.info(deviceList);
+  
     if (adapterPath) {
       adapter = await bus.getProxyObject('org.bluez', adapterPath);
       await adapter.getInterface('org.freedesktop.DBus.Properties').Set('org.bluez.Adapter1', 'Alias', new Variant('s', adapterAlias));
@@ -84,14 +103,8 @@ class BluezAgent {
     } else {
       throw Error('Unable to connect to bluetooth adapter!');
     }
-  
-    const bluezObj1 = await bus.getProxyObject('org.bluez', '/');
-    console.log(bluezObj1);
-    const manager1 = bluezObj1.getInterface('org.freedesktop.DBus.ObjectManager');
-    const managedObjects1 = await manager1.GetManagedObjects();
-    console.log(managedObjects1);
     
-    return new BluezAgent(adapter, onConnected);
+    return new BluezAgent(adapter, deviceList, onConnected, updateDevicesPaired);
   }
   
   get #adapterProperties() {
@@ -101,33 +114,17 @@ class BluezAgent {
   async openDiscovery() {
     console.info('[AGENT] Opening discoverable');
     await this.#adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', true));
-    
-    // Find bluetooth devices, then attempt to connect to the device
-    const bluezObj = await bus.getProxyObject('org.bluez', '/');
-    const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
-    const managedObjects = await manager.GetManagedObjects();
-  
-    console.info(managedObjects);
-  
-    // Check if there is already a device within the managed objects
-    let devicePath;
-    Object.entries(managedObjects).forEach(([path, managedObject]) => {
-      if ('org.bluez.Device1' in managedObject) {
-        devicePath = path;
-      }
-    });
-  
-    // Get device and connect with it
-    if (devicePath) {
-      const device = await bus.getProxyObject('org.bluez', devicePath);
-      console.info(device);
-      device.getInterface('org.bluez.Device1').Connect();
-    }
   }
   
   async closeDiscovery() {
     console.info('[AGENT] Closing discoverable');
     await this.#adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', false));
+  }
+  
+  async connectToDevice(deviceIndex) {
+    console.info('[AGENT] Connecting to device');
+    const device = await bus.getProxyObject('org.bluez', this.deviceList[deviceIndex].path);
+    device.getInterface('org.bluez.Device1').Connect();
   }
 }
 

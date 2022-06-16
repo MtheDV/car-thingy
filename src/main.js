@@ -43,6 +43,10 @@ const updateDevice = () => {
   window.webContents.send('set-device-update', bluezPlayer.alias);
 }
 
+const updateDevicesPaired = () => {
+  window.webContents.send('set-agent-device-list', bluezAgent.deviceList);
+}
+
 const updateConnected = () => {
   if (!bluezPlayer) return;
   bluezPlayer.isConnected().then(async connected => {
@@ -89,7 +93,11 @@ const initializePlayer = () => {
 app.whenReady().then(async () => {
   createWindow();
   
-  BluezAgent.initialize('Subaru Legacy Audio', initializePlayer).then(bluezAgentObject => {
+  BluezAgent.initialize(
+    'Subaru Legacy Audio',
+    initializePlayer,
+    updateDevicesPaired
+  ).then(bluezAgentObject => {
     bluezAgent = bluezAgentObject;
     console.info('[AGENT] Bluetooth agent interface initialized!');
     initializePlayer();
@@ -128,4 +136,22 @@ ipcMain.on('set-audio-next', () => {
 ipcMain.on('set-audio-previous', () => {
   if (!bluezPlayer) return;
   bluezPlayer.previous();
+});
+
+/**
+ * ipcMain functions to handle device connecting/pairing
+ */
+ipcMain.on('set-agent-connect', (_, deviceIndex) => {
+  if (!bluezAgent) return;
+  bluezAgent.connectToDevice(deviceIndex).then(() => {
+    // Initialize the player
+    initializePlayer();
+  }).catch();
+});
+
+ipcMain.on('set-agent-discover', () => {
+  if (!bluezAgent) return;
+  bluezAgent.openDiscovery().then(() => {
+    console.info('[AGENT] Started discovering devices.');
+  });
 });
