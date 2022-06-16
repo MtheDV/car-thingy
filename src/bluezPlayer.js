@@ -84,9 +84,10 @@ class BluezAgent {
       }
       if ('org.bluez.Device1' in managedObject) {
         const device = await bus.getProxyObject('org.bluez', path);
+        const alias = await managedObject.Get('org.bluez.Device1', 'Alias').value;
         deviceList.push({
           path,
-          alias: await device.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias').value
+          alias
         });
       }
     }
