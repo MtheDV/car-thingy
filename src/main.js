@@ -101,6 +101,7 @@ app.whenReady().then(async () => {
     bluezAgent = bluezAgentObject;
     console.info('[AGENT] Bluetooth agent interface initialized!');
     initializePlayer();
+    updateDevicesPaired();
   }).catch(err => {
     console.error('[AGENT] Unable to initialize bluetooth agent!', err);
     // TODO: Disable bluetooth functions on frontend

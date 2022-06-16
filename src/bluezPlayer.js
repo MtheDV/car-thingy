@@ -11,9 +11,6 @@ class BluezAgent {
     this.adapter = adapter;
     this.deviceList = deviceList;
     
-    // Update list of devices that are currently paired
-    updateDevicesPaired();
-    
     /**
      * Add custom method handler for RequestConfirmation and AuthorizeService
      * to auto pair when a device requests itself to connect.
