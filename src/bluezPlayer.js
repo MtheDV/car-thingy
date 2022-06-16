@@ -141,11 +141,7 @@ class BluezAgent {
         }
       }
     });
-    try {
-      device.getInterface('org.bluez.Device1').Connect();
-    } catch (err) {
-      console.log('[ERR]: err');
-    }
+    device.getInterface('org.bluez.Device1').Connect();
   }
 }
 
