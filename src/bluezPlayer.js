@@ -5,11 +5,9 @@ const Message = dbus.Message;
 
 class BluezAgent {
   adapter;
-  deviceList;
   
-  constructor(adapter, deviceList, onConnected, updateDevicesPaired) {
+  constructor(adapter, onConnected) {
     this.adapter = adapter;
-    this.deviceList = deviceList;
     
     /**
      * Add custom method handler for RequestConfirmation and AuthorizeService
@@ -27,23 +25,12 @@ class BluezAgent {
           const [devicePath, _] = msg.body;
           const device = await bus.getProxyObject('org.bluez', devicePath);
           const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
-          const deviceAlias = (await deviceProperties.Get('org.bluez.Device1', 'Alias')).value;
           await deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
           
           // Listen for device connected property change, then call onConnected function
           deviceProperties.on('PropertiesChanged', (iface, changed) => {
             for (let prop of Object.keys(changed)) {
               console.log(`[AGENT] Connecting Device Property changed: ${prop}`);
-              if (prop === 'Paired' && changed[prop].value === true) {
-                // Add to device list if the device is paired
-                if (!this.deviceList.includes(devicePath)) {
-                  this.deviceList.push({
-                    path: devicePath,
-                    alias: deviceAlias
-                  });
-                  updateDevicesPaired();
-                }
-              }
               if (prop === 'Connected' && changed[prop].value === true) {
                 // Stop discovering and run connected function
                 this.closeDiscovery().then(() => {
@@ -72,7 +59,7 @@ class BluezAgent {
     });
   }
   
-  static async initialize(adapterAlias, onConnected, updateDevicesPaired) {
+  static async initialize(adapterAlias, onConnected) {
     // Connect to the bluez dbus, then get the objects it manages
     const bluezObj = await bus.getProxyObject('org.bluez', '/');
     const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
@@ -81,16 +68,9 @@ class BluezAgent {
     // Get the bluetooth adapter to control when the device can be discovered
     let adapterPath = null;
     let adapter = null;
-    let deviceList = [];
     for (const [path, managedObject] of Object.entries(managedObjects)) {
       if ('org.bluez.Adapter1' in managedObject) {
         adapterPath = path;
-      }
-      if ('org.bluez.Device1' in managedObject) {
-        deviceList.push({
-          path,
-          alias: managedObject['org.bluez.Device1'].Alias.value
-        });
       }
     }
     
@@ -105,7 +85,7 @@ class BluezAgent {
       throw Error('Unable to connect to bluetooth adapter!');
     }
     
-    return new BluezAgent(adapter, deviceList, onConnected, updateDevicesPaired);
+    return new BluezAgent(adapter, onConnected);
   }
   
   get #adapterProperties() {
@@ -124,7 +104,8 @@ class BluezAgent {
   
   async connectToDevice(deviceIndex, onConnect) {
     console.info('[AGENT] Finding device.');
-    const device = await bus.getProxyObject('org.bluez', this.deviceList[deviceIndex].path);
+    const deviceList = await this.getPairedDevices();
+    const device = await bus.getProxyObject('org.bluez', deviceList[deviceIndex].path);
     const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
     deviceProperties.on('PropertiesChanged', (iface, changed) => {
       let hasPlayer = false;
@@ -136,12 +117,28 @@ class BluezAgent {
         if (prop === 'Connected' && changed[prop].value === true && hasPlayer) {
           this.closeDiscovery().finally(() => {
             deviceProperties.removeAllListeners('PropertiesChanged');
-            onConnect(this.deviceList[deviceIndex].path);
+            onConnect(deviceList[deviceIndex].path);
           });
         }
       }
     });
     device.getInterface('org.bluez.Device1').Connect();
+  }
+  
+  async getPairedDevices() {
+    const bluezObj = await bus.getProxyObject('org.bluez', '/');
+    const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
+    const managedObjects = await manager.GetManagedObjects();
+    let deviceList = [];
+    for (const [path, managedObject] of Object.entries(managedObjects)) {
+      if ('org.bluez.Device1' in managedObject) {
+        deviceList.push({
+          path,
+          alias: managedObject['org.bluez.Device1'].Alias.value
+        });
+      }
+    }
+    return deviceList;
   }
 }
 
@@ -205,7 +202,7 @@ class BluezPlayer {
         }
       }
     }
-  
+    
     // Get media device if found, otherwise throw error to notify that a device should be connected
     let devicePath;
     let device;

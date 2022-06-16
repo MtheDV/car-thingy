@@ -118,7 +118,7 @@ document.getElementById('pair-device').addEventListener('click', () => {
  */
 const headingTime = document.getElementById('time');
 const headingDate = document.getElementById('date');
-setInterval(() => {
+const updateTime = () => {
   const currentDate = new Date();
   
   const timeFormat = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
@@ -129,8 +129,8 @@ setInterval(() => {
   });
   headingTime.innerText = timeFormat;
   headingDate.innerText = dateFormat;
-  
-  console.log(currentDate.getSeconds());
-  console.log(timeFormat);
-  console.log(dateFormat);
+}
+updateTime();
+setInterval(() => {
+  updateTime();
 }, 1000);

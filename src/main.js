@@ -44,7 +44,11 @@ const updateDevice = () => {
 }
 
 const updateDevicesPaired = () => {
-  window.webContents.send('set-agent-device-list', bluezAgent.deviceList);
+  window.webContents.send('set-agent-device-list', bluezAgent.getPairedDevices());
+  setInterval(() => {
+    console.info('[AGENT] Updating paired devices:', bluezAgent.deviceList);
+    window.webContents.send('set-agent-device-list', bluezAgent.getPairedDevices());
+  }, 2000);
 }
 
 const updateConnected = () => {
@@ -97,8 +101,7 @@ app.whenReady().then(async () => {
   
   BluezAgent.initialize(
     'Subaru Legacy Audio',
-    initializePlayer,
-    updateDevicesPaired
+    initializePlayer
   ).then(bluezAgentObject => {
     bluezAgent = bluezAgentObject;
     console.info('[AGENT] Bluetooth agent interface initialized!');
