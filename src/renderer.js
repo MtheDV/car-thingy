@@ -79,6 +79,7 @@ buttonCurrentDevice.addEventListener('click', () => {
  * Change the view to display the device controls (media, etc)
  */
 window.api.onDeviceUpdate((_, value) => {
+  console.log(value);
   buttonCurrentDevice.setAttribute('data-path', value.path);
   buttonCurrentDevice.innerText = `Connected to ${value.alias}`;
 });
