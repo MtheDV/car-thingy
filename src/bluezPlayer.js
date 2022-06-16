@@ -250,7 +250,6 @@ class BluezPlayer {
   
   async getTrack() {
     const trackVariant = await this.#playerProperties.Get('org.bluez.MediaPlayer1', 'Track');
-    console.info(trackVariant);
     return Object.entries(trackVariant.value).reduce((prev, [type, variant]) => {
       prev[type] = variant.value;
       return prev;
