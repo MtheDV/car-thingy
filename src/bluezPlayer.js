@@ -185,36 +185,28 @@ class BluezPlayer {
   }
   
   static async initialize(selectedDevicePath, playerPropertyChangeActions, devicePropertyChangeActions) {
-    // Connect to selected device instead of searching for the latest
-    if (selectedDevicePath) {
-      const device = await bus.getProxyObject('org.bluez', selectedDevicePath);
-      console.info(await device.getInterface('org.freedesktop.DBus.Properties'));
-      const alias = (await device.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias')).value;
-      // const playerPath = await player.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.MediaPlayer1', 'Player');
-      const player = undefined;
-      return new BluezPlayer(player, device, alias, playerPropertyChangeActions, devicePropertyChangeActions);
-    }
-    
     // Connect to the bluez dbus, then get the objects it manages
     const bluezObj = await bus.getProxyObject('org.bluez', '/');
     const manager = bluezObj.getInterface('org.freedesktop.DBus.ObjectManager');
     const managedObjects = await manager.GetManagedObjects();
     
     // Check if there is already a media player device within the managed objects
-    let playerPath;
     let player;
-    Object.entries(managedObjects).forEach(([path, managedObject]) => {
-      if ('org.bluez.MediaPlayer1' in managedObject) {
-        playerPath = path;
+    let hasCorrectPlayer = false;
+    for (const [path, managedObject] of Object.entries(managedObjects)) {
+      if ('org.bluez.MediaPlayer1' in managedObject && !hasCorrectPlayer) {
+        player = await bus.getProxyObject('org.bluez', path);
+        if (selectedDevicePath === await player.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.MediaPlayer1', 'Device')) {
+          hasCorrectPlayer = true;
+        }
       }
-    });
-    
+    }
+  
     // Get media device if found, otherwise throw error to notify that a device should be connected
     let devicePath;
     let device;
     let alias;
-    if (playerPath) {
-      player = await bus.getProxyObject('org.bluez', playerPath);
+    if (player) {
       devicePath = await player.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.MediaPlayer1', 'Device');
       device = await bus.getProxyObject('org.bluez', devicePath.value);
       alias = (await device.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias')).value;
