@@ -62,7 +62,9 @@ const updateConnected = () => {
   bluezPlayer.isConnected().then(async connected => {
     console.info('[PLAYER] Device connected:', connected);
     // If connected, stop any discovery, otherwise clean up player
-    if (!connected) {
+    if (connected) {
+      updateDevice();
+    } else {
       bluezPlayer.cleanUp();
       bluezPlayer = undefined;
     }
