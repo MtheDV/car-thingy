@@ -44,10 +44,16 @@ const updateDevice = () => {
 }
 
 const updateDevicesPaired = () => {
-  window.webContents.send('set-agent-device-list', bluezAgent.getPairedDevices());
+  const sendPairedDevices = () => {
+    bluezAgent.getPairedDevices().then(deviceList => {
+      console.info('[AGENT] Updating paired devices:', deviceList);
+      window.webContents.send('set-agent-device-list', deviceList);
+    });
+  }
+  
+  sendPairedDevices();
   setInterval(() => {
-    console.info('[AGENT] Updating paired devices:', bluezAgent.deviceList);
-    window.webContents.send('set-agent-device-list', bluezAgent.getPairedDevices());
+    sendPairedDevices();
   }, 2000);
 }
 
