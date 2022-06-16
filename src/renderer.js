@@ -55,8 +55,10 @@ window.api.onStatusUpdate((_, value) => {
 /**
  * When the connected device changes, update the displayed value
  */
+const buttonCurrentDevice = document.getElementById('current-device');
 window.api.onDeviceUpdate((_, value) => {
-  document.getElementById('device-alias').innerText = `Connected to ${value}`;
+  buttonCurrentDevice.setAttribute('data-path', value.path);
+  buttonCurrentDevice.innerText = `Connected to ${value.alias}`;
 });
 
 /**
@@ -84,3 +86,25 @@ window.api.onAgentDeviceListUpdate((_, value) => {
 document.getElementById('pair-device').addEventListener('click', () => {
   window.api.setAgentDiscover();
 });
+
+/**
+ * Update the date and time every 1 second
+ */
+const headingTime = document.getElementById('time');
+const headingDate = document.getElementById('date');
+setInterval(() => {
+  const currentDate = new Date();
+  
+  const timeFormat = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+  const dateFormat = currentDate.toLocaleDateString('en', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric'
+  });
+  headingTime.innerText = timeFormat;
+  headingDate.innerText = dateFormat;
+  
+  console.log(currentDate.getSeconds());
+  console.log(timeFormat);
+  console.log(dateFormat);
+}, 1000);

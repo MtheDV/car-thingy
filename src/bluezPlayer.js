@@ -248,6 +248,14 @@ class BluezPlayer {
     return this.device.getInterface('org.freedesktop.DBus.Properties');
   }
   
+  get deviceDetails() {
+    if (!this.device) return {};
+    return {
+      path: this.device.path,
+      alias: this.alias
+    }
+  }
+  
   async getTrack() {
     const trackVariant = await this.#playerProperties.Get('org.bluez.MediaPlayer1', 'Track');
     return Object.entries(trackVariant.value).reduce((prev, [type, variant]) => {

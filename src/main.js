@@ -40,7 +40,7 @@ const updatePosition = () => {
 }
 
 const updateDevice = () => {
-  window.webContents.send('set-device-update', bluezPlayer.alias);
+  window.webContents.send('set-device-update', bluezPlayer.deviceDetails);
 }
 
 const updateDevicesPaired = () => {
