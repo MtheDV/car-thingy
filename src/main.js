@@ -141,7 +141,7 @@ ipcMain.on('set-audio-previous', () => {
  */
 ipcMain.on('set-agent-connect', (_, deviceIndex) => {
   if (!bluezAgent) return;
-  if (bluezAgent.deviceList[deviceIndex].path === bluezPlayer.device.path) return;
+  if (bluezPlayer && bluezAgent.deviceList[deviceIndex].path === bluezPlayer.device.path) return;
   // Disconnect any current device
   if (bluezPlayer) {
     bluezPlayer.cleanUp();
