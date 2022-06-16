@@ -67,24 +67,31 @@ const updateConnected = () => {
 }
 
 const initializePlayer = (devicePath) => {
-  console.info('[AGENT] Initializing player.')
-  BluezPlayer.initialize(
-    devicePath,
-    {
-      'Track': updateTrack,
-      'Status': updateStatus,
-      'Position': updatePosition
-    }, {
-      'Connected': updateConnected
-    }
-  ).then(bluezPlayerObject => {
-    bluezPlayer = bluezPlayerObject;
-    console.info('[PLAYER] Bluetooth player interface initialized!');
-    console.info('[PLAYER] Connected to:', bluezPlayer.alias);
-    updateDevice();
-  }).catch(err => {
-    console.error('[PLAYER] Unable to initialize bluetooth player interface!', err);
-  });
+  console.info('[AGENT] Initializing player.');
+  setTimeout(() => {
+    BluezPlayer.initialize(
+      devicePath,
+      {
+        'Track': updateTrack,
+        'Status': updateStatus,
+        'Position': updatePosition
+      }, {
+        'Connected': updateConnected
+      }
+    ).then(bluezPlayerObject => {
+      bluezPlayer = bluezPlayerObject;
+      console.info('[PLAYER] Bluetooth player interface initialized!');
+      console.info('[PLAYER] Connected to:', bluezPlayer.alias);
+      updateDevice();
+    }).catch(err => {
+      console.error('[PLAYER] Unable to initialize bluetooth player interface!', err);
+    });
+  }, bluezPlayer ? 500 : 0);
+  if (bluezPlayer) {
+    bluezPlayer.cleanUp();
+    bluezPlayer.disconnect();
+    bluezPlayer = undefined;
+  }
 }
 
 app.whenReady().then(async () => {
@@ -142,11 +149,6 @@ ipcMain.on('set-audio-previous', () => {
 ipcMain.on('set-agent-connect', (_, deviceIndex) => {
   if (!bluezAgent) return;
   if (bluezPlayer && bluezAgent.deviceList[deviceIndex].path === bluezPlayer.device.path) return;
-  // Disconnect any current device
-  if (bluezPlayer) {
-    bluezPlayer.cleanUp();
-    bluezPlayer.disconnect();
-  }
   bluezAgent.connectToDevice(deviceIndex, initializePlayer).then(() => {
     console.info('[AGENT] Connecting to device.')
   }).catch();
