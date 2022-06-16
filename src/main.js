@@ -40,7 +40,7 @@ const updatePosition = () => {
 }
 
 const updateDevice = () => {
-  console.log('updateing device')
+  console.log('updating device', bluezPlayer.deviceDetails);
   window.webContents.send('set-device-update', bluezPlayer.deviceDetails);
 }
 
