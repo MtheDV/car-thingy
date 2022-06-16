@@ -124,6 +124,7 @@ class BluezAgent {
     const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
     deviceProperties.on('PropertiesChanged', (iface, changed) => {
       for (let prop of Object.keys(changed)) {
+        console.info('[DEVICE] Device property changed:', prop);
         if (prop === 'Connected' && changed[prop].value === true) {
           this.closeDiscovery().finally(() => {
             deviceProperties.removeAllListeners('PropertiesChanged');
