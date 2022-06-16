@@ -127,7 +127,7 @@ class BluezAgent {
         console.info('[DEVICE] Device property changed:', prop);
         if (prop === 'Connected' && changed[prop].value === true) {
           this.closeDiscovery().finally(() => {
-            deviceProperties.removeAllListeners('PropertiesChanged');
+            // deviceProperties.removeAllListeners('PropertiesChanged');
             onConnect();
           });
         }
