@@ -1,13 +1,112 @@
-.device-active {
-}
-
-.device-pair {
-}
-
 .visible {
   display: block;
 }
 
 .hidden {
   display: none;
+}
+
+:root {
+  --black: #151515;
+  --white: #FFFFFF;
+  --border-radius-pill: 9999px
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('../fonts/Manrope-VariableFont_wght.ttf') format('truetype');
+  font-weight: 200 800;
+  font-stretch: normal;
+  font-style: normal;
+}
+
+html, body {
+  margin: 0;
+  color: var(--white);
+  background-color: var(--black);
+  height: 100%;
+  width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Manrope', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.car-thingy {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pill-container {
+  border: none;
+  background-color: var(--white);
+  cursor: pointer;
+  border-radius: var(--border-radius-pill);
+  padding: 0.8rem 1.8rem;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.pill-container__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pill-container__heading_text {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.pill-container__heading_sub_text {
+  font-size: 0.8rem;
+}
+
+.time {
+  font-size: 8rem;
+  line-height: 7rem;
+  margin: 0 0 1rem;
+}
+
+.date {
+  font-size: 1.25rem;
+  font-weight: 200;
+  margin: 0;
+}
+
+.device-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.device-active {
+  flex-grow: 1;
+}
+
+.device-pair {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.device-pair .device-list {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.device-pair .device-list li {
+  margin: 0;
+  padding: 0;
 }

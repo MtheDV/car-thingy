@@ -6,28 +6,37 @@
     <title>Web Bluetooth API</title>
     <link rel="stylesheet" type="text/css" href="styles/global.css">
 </head>
-<body>
+<body class="car-thingy">
 
-<h1 id="time">12:00</h1>
-<h2 id="date">Sat, Jun 4</h2>
-
-<div id="device-active" class="device-active hidden">
-    <button id="current-device">Device 1</button>
-    <div>
-        <h2 id="track-title">Track 1</h2>
-        <p id="track-artist">Artist 1</p>
-    </div>
-    <button id="audio-previous">Previous</button>
-    <button id="audio-play-pause">Pause</button>
-    <button id="audio-next">Next</button>
+<div>
+    <h1 id="time" class="time">12:00</h1>
+    <h2 id="date" class="date">Sat, Jun 4</h2>
 </div>
 
-<div id="device-pair" class="device-pair visible">
-    <ul id="device-list">
+<div class="device-actions">
+    <button id="current-device" class="pill-container hidden" data-path=""></button>
 
-    </ul>
+    <div id="device-active" class="device-active hidden">
+        <div>
+            <div>
+                <h2 id="track-title">Track 1</h2>
+                <p id="track-artist">Artist 1</p>
+            </div>
+            <button id="audio-previous">Previous</button>
+            <button id="audio-play-pause">Pause</button>
+            <button id="audio-next">Next</button>
+        </div>
+    </div>
 
-    <button id="pair-device">Pair New Device</button>
+    <div id="device-pair" class="device-pair visible">
+        <ul id="device-list"></ul>
+        <button id="pair-device" class="pill-container">
+        <span class="pill-container__heading">
+            <span class="pill-container__heading_text">Bluetooth</span>
+            <span class="pill-container__heading_sub_text">Pair New Device</span>
+        </span>
+        </button>
+    </div>
 </div>
 
 <script src="renderer.js"></script>

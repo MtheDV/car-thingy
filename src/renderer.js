@@ -56,8 +56,8 @@ const buttonCurrentDevice = document.getElementById('current-device');
 const divDeviceActive = document.getElementById('device-active');
 const divDevicePair = document.getElementById('device-pair');
 
-const swapDeviceView = () => {
-  if (divDeviceActive.classList.contains('visible')) {
+const swapDeviceView = (viewDeviceList) => {
+  if (viewDeviceList) {
     divDeviceActive.classList.replace('visible', 'hidden');
     divDevicePair.classList.replace('hidden', 'visible');
     return;
@@ -71,17 +71,54 @@ const swapDeviceView = () => {
  * When current device button is clicked, change to device pair view
  */
 buttonCurrentDevice.addEventListener('click', () => {
-  swapDeviceView();
+  swapDeviceView(true);
 });
+
+const createContainerHeadingSpan = (text, subText) => {
+  const headingSpan = document.createElement('span');
+  headingSpan.classList.add('pill-container__heading');
+  const headingTextSpan = document.createElement('span');
+  headingTextSpan.classList.add('pill-container__heading_text');
+  headingTextSpan.innerText = text;
+  const headingSubSpan = document.createElement('span');
+  headingSubSpan.classList.add('pill-container__heading_text');
+  headingSubSpan.innerText = subText;
+  headingSpan.append(headingTextSpan, headingSubSpan);
+  return headingSpan
+}
 
 /**
  * When the connected device changes, update the displayed value
  * Change the view to display the device controls (media, etc)
  */
 window.api.onDeviceUpdate((_, value) => {
+  if (!value) {
+    // No device is connected, so return to connection view and hide this button
+    buttonCurrentDevice.classList.replace('visible', 'hidden');
+    buttonCurrentDevice.setAttribute('data-path', '');
+    swapDeviceView(true);
+    return;
+  }
+  buttonCurrentDevice.classList.replace('hidden', 'visible');
   buttonCurrentDevice.setAttribute('data-path', value.path);
-  buttonCurrentDevice.innerText = `Connected to ${value.alias}`;
+  buttonCurrentDevice.innerHTML = '';
+  buttonCurrentDevice.append(createContainerHeadingSpan(value.alias, 'Connected'));
+  swapDeviceView(false);
 });
+
+const createDeviceListButton = (device, index) => {
+  const button = document.createElement('button');
+  button.classList.add('pill-container');
+  button.setAttribute('data-path', device.path);
+  button.append(createContainerHeadingSpan(device.alias, 'Connect Device'));
+  button.addEventListener('click', () => {
+    if (buttonCurrentDevice.getAttribute('data-path') === device.path) {
+      swapDeviceView(false);
+    }
+    window.api.setAgentConnect(index);
+  });
+  return button;
+}
 
 /**
  * Wait to receive the device list and update it visually
@@ -92,16 +129,7 @@ window.api.onAgentDeviceListUpdate((_, value) => {
   document.getElementById('device-list').innerHTML = '';
   value.forEach((device, index) => {
     const li = document.createElement('li');
-    const button = document.createElement('button');
-    button.setAttribute('data-path', device.path);
-    button.innerText = device.alias ?? 'Unknown Device';
-    button.addEventListener('click', () => {
-      if (buttonCurrentDevice.getAttribute('data-path') === device.path) {
-        swapDeviceView();
-      }
-      window.api.setAgentConnect(index);
-    });
-    li.append(button);
+    li.append(createDeviceListButton(device, index));
     document.getElementById('device-list').append(li);
   })
 })
@@ -121,7 +149,11 @@ const headingDate = document.getElementById('date');
 const updateTime = () => {
   const currentDate = new Date();
   
-  const timeFormat = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+  const timeFormat = currentDate.toLocaleTimeString('en', {
+    hour12: true,
+    hour: 'numeric',
+    minute: '2-digit'
+  }).replace(' PM', '').replace(' AM', '');
   const dateFormat = currentDate.toLocaleDateString('en', {
     weekday: 'short',
     month: 'short',

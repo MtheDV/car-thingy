@@ -12,9 +12,9 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
-    }
+    },
+    autoHideMenuBar: true
   });
-  
   window.loadFile('./src/index.html');
 }
 
@@ -40,7 +40,7 @@ const updatePosition = () => {
 }
 
 const updateDevice = () => {
-  window.webContents.send('set-device-update', bluezPlayer.deviceDetails);
+  window.webContents.send('set-device-update', bluezPlayer?.deviceDetails);
 }
 
 const updateDevicesPaired = () => {
@@ -69,12 +69,14 @@ const updateConnected = () => {
     } else {
       bluezPlayer.cleanUp();
       bluezPlayer = undefined;
+      updateDevice();
     }
   }).catch(async err => {
     console.error('[PLAYER] Something went wrong while checking if connected!', err)
     // Clean up player and destroy object
     bluezPlayer.cleanUp();
     bluezPlayer = undefined;
+    updateDevice();
   });
 }
 
