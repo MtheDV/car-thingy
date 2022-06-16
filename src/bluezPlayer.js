@@ -89,7 +89,7 @@ class BluezAgent {
         });
       }
     }
-  
+    
     if (adapterPath) {
       adapter = await bus.getProxyObject('org.bluez', adapterPath);
       await adapter.getInterface('org.freedesktop.DBus.Properties').Set('org.bluez.Adapter1', 'Alias', new Variant('s', adapterAlias));
@@ -118,10 +118,22 @@ class BluezAgent {
     await this.#adapterProperties.Set('org.bluez.Adapter1', 'Discoverable', new Variant('b', false));
   }
   
-  async connectToDevice(deviceIndex) {
-    console.info('[AGENT] Connecting to device');
+  async connectToDevice(deviceIndex, onConnect) {
+    console.info('[AGENT] Finding device.');
     const device = await bus.getProxyObject('org.bluez', this.deviceList[deviceIndex].path);
-    await device.getInterface('org.bluez.Device1').Connect();
+    const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
+    deviceProperties.on('PropertiesChanged', (iface, changed) => {
+      for (let prop of Object.keys(changed)) {
+        if (prop === 'Connected' && changed[prop].value === true) {
+          this.closeDiscovery().finally(() => {
+            deviceProperties.removeAllListeners('PropertiesChanged');
+            onConnect();
+          });
+        }
+      }
+      device.getInterface('org.bluez.Device1').Connect();
+    });
+    
   }
 }
 
@@ -157,7 +169,7 @@ class BluezPlayer {
         devicePropertyChangeActions[prop]();
       }
     });
-  
+    
     /**
      * Create listener to watch for device property changes every X seconds
      */

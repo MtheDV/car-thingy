@@ -138,9 +138,8 @@ ipcMain.on('set-audio-previous', () => {
  */
 ipcMain.on('set-agent-connect', (_, deviceIndex) => {
   if (!bluezAgent) return;
-  bluezAgent.connectToDevice(deviceIndex).then(() => {
-    // Initialize the player
-    initializePlayer();
+  bluezAgent.connectToDevice(deviceIndex, initializePlayer).then(() => {
+    console.info('[AGENT] Connecting to device.')
   }).catch();
 });
 
