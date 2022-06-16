@@ -66,7 +66,6 @@ const updateConnected = () => {
       updateDevice();
       updateTrack();
       updatePosition();
-      updateStatus();
     } else {
       bluezPlayer.cleanUp();
       bluezPlayer = undefined;
