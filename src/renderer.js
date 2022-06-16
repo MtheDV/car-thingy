@@ -52,10 +52,32 @@ window.api.onStatusUpdate((_, value) => {
   updatePlayPauseButton();
 });
 
+const buttonCurrentDevice = document.getElementById('current-device');
+const divDeviceActive = document.getElementById('device-active');
+const divDevicePair = document.getElementById('device-pair');
+
+const swapDeviceView = () => {
+  if (divDeviceActive.classList.contains('visible')) {
+    divDeviceActive.classList.replace('visible', 'hidden');
+    divDevicePair.classList.replace('hidden', 'visible');
+    return;
+  }
+  
+  divDeviceActive.classList.replace('hidden', 'visible');
+  divDevicePair.classList.replace('visible', 'hidden');
+}
+
+/**
+ * When current device button is clicked, change to device pair view
+ */
+buttonCurrentDevice.addEventListener('click', () => {
+  swapDeviceView();
+});
+
 /**
  * When the connected device changes, update the displayed value
+ * Change the view to display the device controls (media, etc)
  */
-const buttonCurrentDevice = document.getElementById('current-device');
 window.api.onDeviceUpdate((_, value) => {
   buttonCurrentDevice.setAttribute('data-path', value.path);
   buttonCurrentDevice.innerText = `Connected to ${value.alias}`;
@@ -64,6 +86,7 @@ window.api.onDeviceUpdate((_, value) => {
 /**
  * Wait to receive the device list and update it visually
  * Buttons created will be clickable and call api to connect
+ * If a button is connected and is the current connected device, switch view
  */
 window.api.onAgentDeviceListUpdate((_, value) => {
   document.getElementById('device-list').innerHTML = '';
@@ -73,6 +96,9 @@ window.api.onAgentDeviceListUpdate((_, value) => {
     button.setAttribute('data-path', device.path);
     button.innerText = device.alias ?? 'Unknown Device';
     button.addEventListener('click', () => {
+      if (buttonCurrentDevice.getAttribute('data-path') === device.path) {
+        swapDeviceView();
+      }
       window.api.setAgentConnect(index);
     });
     li.append(button);

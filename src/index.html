@@ -4,28 +4,31 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
     <title>Web Bluetooth API</title>
+    <link rel="stylesheet" type="text/css" href="styles/global.css">
 </head>
 <body>
 
 <h1 id="time">12:00</h1>
 <h2 id="date">Sat, Jun 4</h2>
 
-<button id="current-device">Device 1</button>
-
-<button id="audio-previous">Previous</button>
-<button id="audio-play-pause">Pause</button>
-<button id="audio-next">Next</button>
-
-<div>
-    <h2 id="track-title">Track 1</h2>
-    <p id="track-artist">Artist 1</p>
+<div id="device-active" class="device-active hidden">
+    <button id="current-device">Device 1</button>
+    <div>
+        <h2 id="track-title">Track 1</h2>
+        <p id="track-artist">Artist 1</p>
+    </div>
+    <button id="audio-previous">Previous</button>
+    <button id="audio-play-pause">Pause</button>
+    <button id="audio-next">Next</button>
 </div>
 
-<ul id="device-list">
+<div id="device-pair" class="device-pair visible">
+    <ul id="device-list">
 
-</ul>
+    </ul>
 
-<button id="pair-device">Pair New Device</button>
+    <button id="pair-device">Pair New Device</button>
+</div>
 
 <script src="renderer.js"></script>
 </body>
