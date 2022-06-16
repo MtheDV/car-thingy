@@ -246,7 +246,6 @@ class BluezPlayer {
   }
   
   get deviceDetails() {
-    if (!this.device) return {};
     return {
       path: this.device.path,
       alias: this.alias
