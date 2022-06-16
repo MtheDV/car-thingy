@@ -91,6 +91,9 @@ const initializePlayer = (devicePath) => {
       console.info('[PLAYER] Bluetooth player interface initialized!');
       console.info('[PLAYER] Connected to:', bluezPlayer.alias);
       updateDevice();
+      updateTrack();
+      updatePosition();
+      updateStatus();
     }).catch(err => {
       console.error('[PLAYER] Unable to initialize bluetooth player interface!', err);
     });
