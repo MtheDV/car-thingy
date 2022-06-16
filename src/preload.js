@@ -31,10 +31,10 @@ contextBridge.exposeInMainWorld('api', {
   onAgentDeviceListUpdate: (callback) => {
     ipcRenderer.on('set-agent-device-list', callback);
   },
-  onAgentConnect: (deviceIndex) => {
+  setAgentConnect: (deviceIndex) => {
     ipcRenderer.send('set-agent-connect', deviceIndex);
   },
-  onAgentDiscover: () => {
+  setAgentDiscover: () => {
     ipcRenderer.send('set-agent-discover');
   }
 });

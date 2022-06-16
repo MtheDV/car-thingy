@@ -89,8 +89,6 @@ class BluezAgent {
         });
       }
     }
-    
-    console.info(deviceList);
   
     if (adapterPath) {
       adapter = await bus.getProxyObject('org.bluez', adapterPath);

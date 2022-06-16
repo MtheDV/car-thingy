@@ -61,17 +61,23 @@ window.api.onDeviceUpdate((_, value) => {
 
 /**
  * Wait to receive the device list and update it visually
+ * Buttons created will be clickable and call api to connect
  */
 window.api.onAgentDeviceListUpdate((_, value) => {
   document.getElementById('device-list').innerHTML = '';
-  value.forEach(device => {
+  value.forEach((device, index) => {
     const li = document.createElement('li');
-    li.innerText = device.alias ?? 'Unknown Device';
-    li.setAttribute('data-path', device.path);
+    const button = document.createElement('button');
+    button.setAttribute('data-path', device.path);
+    button.innerText = device.alias ?? 'Unknown Device';
+    button.addEventListener('click', () => {
+      window.api.setAgentConnect(index);
+    });
+    li.append(button);
     document.getElementById('device-list').append(li);
   })
 })
 
 /**
- * Connect to device when the button is pressed
+ * Enter pairing mode when connected
  */
