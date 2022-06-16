@@ -25,7 +25,7 @@ contextBridge.exposeInMainWorld('api', {
     ipcRenderer.on('set-position-update', callback);
   },
   onDeviceUpdate: (callback) => {
-    console.log(callback);
+    console.log(callback[0], callback[1]);
     ipcRenderer.on('set-device-update', callback);
   },
   // Handle connecting to devices and pairing new devices
