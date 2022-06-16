@@ -79,7 +79,6 @@ buttonCurrentDevice.addEventListener('click', () => {
  * Change the view to display the device controls (media, etc)
  */
 window.api.onDeviceUpdate((_, value) => {
-  console.log(value);
   buttonCurrentDevice.setAttribute('data-path', value.path);
   buttonCurrentDevice.innerText = `Connected to ${value.alias}`;
 });
@@ -97,8 +96,6 @@ window.api.onAgentDeviceListUpdate((_, value) => {
     button.setAttribute('data-path', device.path);
     button.innerText = device.alias ?? 'Unknown Device';
     button.addEventListener('click', () => {
-      console.log(device.path);
-      console.log(buttonCurrentDevice.getAttribute('data-path'));
       if (buttonCurrentDevice.getAttribute('data-path') === device.path) {
         swapDeviceView();
       }
