@@ -123,11 +123,15 @@ class BluezAgent {
     const device = await bus.getProxyObject('org.bluez', this.deviceList[deviceIndex].path);
     const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
     deviceProperties.on('PropertiesChanged', (iface, changed) => {
+      let hasPlayer = false;
       for (let prop of Object.keys(changed)) {
         console.info('[DEVICE] Device property changed:', prop);
-        if (prop === 'Connected' && changed[prop].value === true) {
+        if (prop === 'Player') {
+          hasPlayer = true;
+        }
+        if (prop === 'Connected' && changed[prop].value === true && hasPlayer) {
           this.closeDiscovery().finally(() => {
-            // deviceProperties.removeAllListeners('PropertiesChanged');
+            deviceProperties.removeAllListeners('PropertiesChanged');
             onConnect();
           });
         }
