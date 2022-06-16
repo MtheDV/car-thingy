@@ -63,14 +63,13 @@ window.api.onDeviceUpdate((_, value) => {
  * Wait to receive the device list and update it visually
  */
 window.api.onAgentDeviceListUpdate((_, value) => {
-  const devices = value.map(device => {
+  document.getElementById('device-list').innerHTML = '';
+  value.forEach(device => {
     const li = document.createElement('li');
     li.innerText = device.alias ?? 'Unknown Device';
     li.setAttribute('data-path', device.path);
-    return li;
+    document.getElementById('device-list').append(li);
   })
-  document.getElementById('device-list').innerHTML = '';
-  document.getElementById('device-list').append(devices);
 })
 
 /**
