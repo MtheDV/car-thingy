@@ -61,9 +61,12 @@ const updateConnected = () => {
   if (!bluezPlayer) return;
   bluezPlayer.isConnected().then(async connected => {
     console.info('[PLAYER] Device connected:', connected);
-    // If connected, stop any discovery, otherwise clean up player
+    // If connected, send device details, otherwise clean up player
     if (connected) {
       updateDevice();
+      updateTrack();
+      updatePosition();
+      updateStatus();
     } else {
       bluezPlayer.cleanUp();
       bluezPlayer = undefined;
@@ -92,10 +95,6 @@ const initializePlayer = (devicePath) => {
       bluezPlayer = bluezPlayerObject;
       console.info('[PLAYER] Bluetooth player interface initialized!');
       console.info('[PLAYER] Connected to:', bluezPlayer.alias);
-      updateDevice();
-      updateTrack();
-      updatePosition();
-      updateStatus();
     }).catch(err => {
       console.error('[PLAYER] Unable to initialize bluetooth player interface!', err);
     });
