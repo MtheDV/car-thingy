@@ -27,6 +27,7 @@ class BluezAgent {
           const [devicePath, _] = msg.body;
           const device = await bus.getProxyObject('org.bluez', devicePath);
           const deviceProperties = device.getInterface('org.freedesktop.DBus.Properties');
+          const deviceAlias = (await deviceProperties.Get('org.bluez.Device1', 'Alias')).value;
           await deviceProperties.Set('org.bluez.Device1', 'Trusted', new Variant('b', true));
           
           // Listen for device connected property change, then call onConnected function
@@ -36,7 +37,10 @@ class BluezAgent {
               if (prop === 'Paired' && changed[prop].value === true) {
                 // Add to device list if the device is paired
                 if (!this.deviceList.includes(devicePath)) {
-                  this.deviceList.push(devicePath);
+                  this.deviceList.push({
+                    path: devicePath,
+                    alias: deviceAlias
+                  });
                   updateDevicesPaired();
                 }
               }
