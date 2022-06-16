@@ -188,7 +188,7 @@ class BluezPlayer {
     // Connect to selected device instead of searching for the latest
     if (selectedDevicePath) {
       const device = await bus.getProxyObject('org.bluez', selectedDevicePath);
-      console.info(device);
+      console.info(await device.getInterface('org.freedesktop.DBus.Properties'));
       const alias = (await device.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.Device1', 'Alias')).value;
       // const playerPath = await player.getInterface('org.freedesktop.DBus.Properties').Get('org.bluez.MediaPlayer1', 'Player');
       const player = undefined;
