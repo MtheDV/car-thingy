@@ -54,7 +54,7 @@ const updateDevicesPaired = () => {
   sendPairedDevices();
   setInterval(() => {
     sendPairedDevices();
-  }, 2000);
+  }, 3000);
 }
 
 const updateConnected = () => {
