@@ -88,12 +88,12 @@ button {
 .device-actions {
   display: flex;
   align-items: center;
-  gap: 2rem;
   width: 100%;
 }
 
 .device-active {
   flex-grow: 1;
+  margin-left: 2rem;
 }
 
 .device-active .media-controls {
@@ -121,6 +121,7 @@ button {
   justify-content: space-between;
   align-items: center;
   flex-grow: 1;
+  margin-left: 2rem;
 }
 
 .device-pair .device-list {
