@@ -16,15 +16,17 @@
 <div class="device-actions">
     <button id="current-device" class="pill-container hidden" data-path=""></button>
 
-    <div id="device-active" class="device-active hidden">
+    <div id="device-active" class="device-active">
         <div class="pill-container">
-            <div class="pill-container__heading">
-                <h2 id="track-title" class="pill-container__heading_text">Track 1</h2>
-                <p id="track-artist" class="pill-container__heading_sub_text">Artist 1</p>
+            <span class="pill-container__heading">
+                <span id="track-title" class="pill-container__heading_text">Track 1</span>
+                <span id="track-artist" class="pill-container__heading_sub_text">Artist 1</span>
+            </span>
+            <div class="media-controls">
+                <button id="audio-previous" class="media-button">Previous</button>
+                <button id="audio-play-pause" class="media-button">Pause</button>
+                <button id="audio-next" class="media-button">Next</button>
             </div>
-            <button id="audio-previous">Previous</button>
-            <button id="audio-play-pause">Pause</button>
-            <button id="audio-next">Next</button>
         </div>
     </div>
 

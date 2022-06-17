@@ -35,6 +35,10 @@ html, body {
   font-weight: 400;
 }
 
+button {
+  cursor: pointer;
+}
+
 .car-thingy {
   padding: 2rem;
   display: flex;
@@ -47,9 +51,8 @@ html, body {
   justify-content: space-between;
   border: none;
   background-color: var(--white);
-  cursor: pointer;
+  color: var(--black);
   border-radius: var(--border-radius-pill);
-  padding: 0.8rem 1.8rem;
   font-size: 1rem;
   text-align: left;
 }
@@ -58,6 +61,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  padding: 0.8rem 1.8rem;
 }
 
 .pill-container__heading_text {
@@ -90,6 +94,26 @@ html, body {
 
 .device-active {
   flex-grow: 1;
+}
+
+.device-active .media-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.device-active .media-controls .media-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  background-color: var(--black);
+  color: var(--white);
+  cursor: pointer;
+  border-radius: var(--border-radius-pill);
+  width: 3.25rem;
+  height: 3.25rem;
 }
 
 .device-pair {
