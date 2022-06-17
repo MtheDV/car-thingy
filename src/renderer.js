@@ -57,7 +57,7 @@ const divDeviceActive = document.getElementById('device-active');
 const divDevicePair = document.getElementById('device-pair');
 
 const swapDeviceView = (viewDevicePair) => {
-  if (viewDevicePair) {
+  if (viewDevicePair === true || (viewDevicePair === undefined && divDeviceActive.classList.contains('visible'))) {
     divDeviceActive.classList.replace('visible', 'hidden');
     divDevicePair.classList.replace('hidden', 'visible');
     return;
@@ -70,7 +70,7 @@ const swapDeviceView = (viewDevicePair) => {
  * When current device button is clicked, change to device pair view
  */
 buttonCurrentDevice.addEventListener('click', () => {
-  swapDeviceView(true);
+  swapDeviceView();
 });
 
 const createContainerHeadingSpan = (text, subText) => {
