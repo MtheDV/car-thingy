@@ -1,9 +1,9 @@
 .visible {
-  display: block;
+  display: inherit !important;
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 :root {
