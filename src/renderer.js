@@ -116,7 +116,7 @@ window.api.onDeviceUpdate((_, value) => {
 
 const createDeviceListButton = (device, index) => {
   const button = document.createElement('button');
-  button.classList.add('pill-container');
+  button.classList.add('pill-container hidden');
   button.setAttribute('data-path', device.path);
   button.append(createContainerHeadingSpan(device.alias, 'Connect Device'));
   button.addEventListener('click', () => {
