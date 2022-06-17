@@ -56,13 +56,12 @@ const buttonCurrentDevice = document.getElementById('current-device');
 const divDeviceActive = document.getElementById('device-active');
 const divDevicePair = document.getElementById('device-pair');
 
-const swapDeviceView = (viewDeviceList) => {
-  if (viewDeviceList) {
+const swapDeviceView = (viewDevicePair) => {
+  if (viewDevicePair) {
     divDeviceActive.classList.replace('visible', 'hidden');
     divDevicePair.classList.replace('hidden', 'visible');
     return;
   }
-  
   divDeviceActive.classList.replace('hidden', 'visible');
   divDevicePair.classList.replace('visible', 'hidden');
 }
@@ -89,21 +88,30 @@ const createContainerHeadingSpan = (text, subText) => {
 
 /**
  * When the connected device changes, update the displayed value
- * Change the view to display the device controls (media, etc)
  */
 window.api.onDeviceUpdate((_, value) => {
   if (!value) {
-    // No device is connected, so return to connection view and hide this button
+    // No device is connected, so return to connection view, hide this button, and show device list button
     buttonCurrentDevice.classList.replace('visible', 'hidden');
     buttonCurrentDevice.setAttribute('data-path', '');
+    [...document.getElementById('device-list').children].forEach(listItem => {
+      listItem.children[0].classList.remove('hidden');
+    });
     swapDeviceView(true);
     return;
   }
+  // Create a connected button with device details, and hide the related button in the device list
   buttonCurrentDevice.classList.replace('hidden', 'visible');
   buttonCurrentDevice.setAttribute('data-path', value.path);
   buttonCurrentDevice.innerHTML = '';
   buttonCurrentDevice.append(createContainerHeadingSpan(value.alias, 'Connected'));
-  swapDeviceView(false);
+  [...document.getElementById('device-list').children].forEach(listItem => {
+    if (listItem.children[0].getAttribute('data-path') === value.path) {
+      listItem.children[0].classList.add('hidden');
+    } else {
+      listItem.children[0].classList.remove('hidden');
+    }
+  });
 });
 
 const createDeviceListButton = (device, index) => {
