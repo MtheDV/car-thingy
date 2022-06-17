@@ -43,6 +43,8 @@ html, body {
 }
 
 .pill-container {
+  display: flex;
+  justify-content: space-between;
   border: none;
   background-color: var(--white);
   cursor: pointer;
@@ -82,7 +84,7 @@ html, body {
 .device-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
   width: 100%;
 }
 
@@ -103,7 +105,7 @@ html, body {
   list-style-type: none;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .device-pair .device-list li {
