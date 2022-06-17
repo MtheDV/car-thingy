@@ -96,14 +96,18 @@ button {
   margin-left: 2rem;
 }
 
-.device-active .media-controls {
+.device-active__container {
+  width: 100%;
+}
+
+.device-active__media-controls {
   display: flex;
   gap: 0.5rem;
   align-items: center;
   padding: 0.5rem;
 }
 
-.device-active .media-controls .media-button {
+.device-active__media-controls__media-button {
   display: flex;
   justify-content: center;
   align-items: center;
