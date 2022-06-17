@@ -81,7 +81,7 @@ const createContainerHeadingSpan = (text, subText) => {
   headingTextSpan.classList.add('pill-container__heading_text');
   headingTextSpan.innerText = text;
   const headingSubSpan = document.createElement('span');
-  headingSubSpan.classList.add('pill-container__heading_text');
+  headingSubSpan.classList.add('pill-container__heading_sub_text');
   headingSubSpan.innerText = subText;
   headingSpan.append(headingTextSpan, headingSubSpan);
   return headingSpan
